@@ -1,0 +1,616 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ZCCD Mymensingh - Engineering Task Engine</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        :root {
+            --bg-color: #f7fafc;
+            --card-bg: #ffffff;
+            --primary: #1a365d;
+            --accent: #2b6cb0;
+            --text: #2d3748;
+            --border: #e2e8f0;
+            --success: #38a169;
+            --danger: #e53e3e;
+            --warning: #dd6b20;
+        }
+
+        body {
+            font-family: 'Segoe UI', system-ui, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text);
+            margin: 0;
+            padding: 20px;
+        }
+
+        .container { max-width: 1400px; margin: 0 auto; }
+        
+        /* Login Screen Overlay Styling */
+        #loginOverlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(26, 54, 93, 0.95); display: flex;
+            justify-content: center; align-items: center; z-index: 1000;
+        }
+
+        .login-box {
+            background: white; padding: 30px; border-radius: 8px;
+            width: 100%; max-width: 380px; box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+            text-align: center;
+        }
+        .login-box h2 { color: var(--primary); margin-top: 0; margin-bottom: 5px; font-size: 20px; }
+        .login-box p { font-size: 13px; color: #718096; margin-bottom: 20px; }
+        .login-box button { background-color: var(--primary); margin-top: 10px; }
+        .login-box button:hover { background-color: var(--accent); }
+        .error-msg { color: var(--danger); font-size: 13px; margin-top: 10px; display: none; font-weight: 600;}
+
+        /* Main Dashboard Layout */
+        #dashboardContent { display: none; }
+
+        header {
+            background: linear-gradient(135deg, var(--primary), var(--accent));
+            color: white; padding: 20px; border-radius: 8px; margin-bottom: 20px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05); display: flex;
+            justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px;
+        }
+        .header-title h1 { margin: 0; font-size: 24px; letter-spacing: 0.5px; }
+        .header-title p { margin: 5px 0 0 0; opacity: 0.9; font-size: 14px; }
+        
+        .header-meta-box { display: flex; align-items: center; gap: 12px; }
+        .header-signature {
+            background: rgba(255, 255, 255, 0.15); padding: 8px 15px;
+            border-radius: 6px; border-left: 4px solid #fff; font-size: 13px; font-weight: 500;
+        }
+        .btn-logout {
+            background: #e53e3e; color: white; border: none; padding: 8px 12px;
+            border-radius: 4px; font-size: 12px; cursor: pointer; font-weight: bold; width: auto;
+        }
+        .btn-logout:hover { background: #c53030; }
+
+        .grid { display: grid; grid-template-columns: 1fr; gap: 20px; }
+        @media (min-width: 992px) { .grid { grid-template-columns: 460px 1fr; } }
+
+        .card {
+            background: var(--card-bg); border-radius: 8px; padding: 20px;
+            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); border: 1px solid var(--border);
+            margin-bottom: 20px;
+        }
+
+        .card h2 {
+            margin-top: 0; font-size: 16px; text-transform: uppercase;
+            letter-spacing: 0.5px; border-bottom: 2px solid var(--border);
+            padding-bottom: 8px; color: var(--primary);
+        }
+
+        .form-group { margin-bottom: 12px; }
+        label { display: block; margin-bottom: 4px; font-weight: 600; font-size: 13px; color: #4a5568;}
+        input, select, textarea {
+            width: 100%; padding: 8px; border: 1px solid var(--border);
+            border-radius: 4px; box-sizing: border-box; font-size: 13px;
+        }
+        
+        .subtask-panel {
+            background: #f8fafc; border: 1px dashed var(--accent);
+            padding: 12px; border-radius: 6px; margin-top: 10px;
+        }
+        .subtask-panel h3 { margin: 0 0 8px 0; font-size: 13px; color: var(--accent); }
+
+        button {
+            background-color: var(--accent); color: white; border: none;
+            padding: 10px; border-radius: 4px; cursor: pointer;
+            font-weight: bold; width: 100%; font-size: 14px; transition: background 0.2s;
+        }
+        button:hover { background-color: var(--primary); }
+
+        .metrics-table { width: 100%; border-collapse: collapse; }
+        .metrics-table th, .metrics-table td {
+            border: 1px solid var(--border); padding: 8px; text-align: center; font-size: 13px;
+        }
+        .metrics-table th { background-color: #edf2f7; }
+
+        .task-item {
+            border: 1px solid var(--border); border-left: 5px solid var(--accent);
+            padding: 15px; margin-bottom: 15px; border-radius: 4px; background: #fff;
+        }
+        .task-item.completed { border-left-color: var(--success); background-color: #f0fff4; }
+        .task-item.overdue { border-left-color: var(--danger); }
+
+        .badge {
+            display: inline-block; padding: 2px 6px; border-radius: 4px;
+            font-size: 11px; font-weight: bold; color: white;
+        }
+        .bg-tag { background-color: #4a5568; }
+        .bg-success { background-color: var(--success); }
+        .bg-danger { background-color: var(--danger); }
+        .bg-warn { background-color: var(--warning); }
+
+        .subtask-grid {
+            display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+            gap: 12px; margin-top: 10px; background: #f7fafc; padding: 12px; border-radius: 4px;
+            border: 1px solid var(--border);
+        }
+        .subtask-field { font-size: 12px; }
+        .subtask-field span { font-weight: 600; color: #4a5568; display:block; margin-bottom:2px;}
+    </style>
+</head>
+<body>
+
+<div id="loginOverlay">
+    <div class="login-box">
+        <h2>ZCCD Mymensingh Portal</h2>
+        <p>Please log in with admin verification credentials</p>
+        <form id="loginForm">
+            <div class="form-group" style="text-align: left;">
+                <label for="username">User ID</label>
+                <input type="text" id="username" required placeholder="Enter User ID">
+            </div>
+            <div class="form-group" style="text-align: left;">
+                <label for="password">Password</label>
+                <input type="password" id="password" required placeholder="Enter Password">
+            </div>
+            <button type="submit">Verify & Authenticate</button>
+            <div id="loginError" class="error-msg">Invalid User ID or Password!</div>
+        </form>
+    </div>
+</div>
+
+<div id="dashboardContent">
+    <div class="container">
+        <header>
+            <div class="header-title">
+                <h1>ZCCD Mymensingh - BPDB</h1>
+                <p>Operational Task Pipeline Engine & Performance Analytics Dashboard</p>
+            </div>
+            <div class="header-meta-box">
+                <div class="header-signature">
+                    Created by: <strong>Minhaj, SDE, 102333</strong>
+                </div>
+                <button class="btn-logout" onclick="handleLogout()">Log Out</button>
+            </div>
+        </header>
+
+        <div class="grid">
+            <div>
+                <div class="card">
+                    <h2>Deploy Enterprise Task</h2>
+                    <form id="workflowForm">
+                        <div class="form-group">
+                            <label for="assigner">Assigned By</label>
+                            <select id="assigner" required onchange="filterAssignees()">
+                                <option value="XEN">XEN (Executive Engineer)</option>
+                                <option value="SDE">SDE (Sub-Divisional Engineer)</option>
+                                <option value="AE 1">AE 1</option>
+                                <option value="AE 2">AE 2</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="assignee">Assign To</label>
+                            <select id="assignee" required></select>
+                        </div>
+                        <div class="form-group">
+                            <label for="taskCategory">Task Category Structure</label>
+                            <select id="taskCategory" required onchange="renderSubtaskFormInputs()">
+                                <option value="Design">1. Design</option>
+                                <option value="Estimate approval" selected>2. Estimate approval</option>
+                                <option value="Tender related">3. Tender related</option>
+                                <option value="Site visit">4. Site visit</option>
+                                <option value="Follow up">5. Follow up</option>
+                                <option value="App approval">6. App approval</option>
+                                <option value="Budget approval">7. Budget approval</option>
+                                <option value="Reports">8. Reports</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="deadline">Global Target Deadline</label>
+                            <input type="date" id="deadline" required>
+                        </div>
+
+                        <div class="subtask-panel">
+                            <h3>Workflow Process Sub-components</h3>
+                            <div id="dynamicSubtaskFields"></div>
+                        </div>
+                        
+                        <button type="submit" style="margin-top:15px;">Commit Task to Ledger</button>
+                    </form>
+                </div>
+
+                <div class="card">
+                    <h2>Target Performance Matrix</h2>
+                    <table class="metrics-table">
+                        <thead>
+                            <tr>
+                                <th>Rank</th>
+                                <th>Total Assigned</th>
+                                <th>On-Time Completed</th>
+                            </tr>
+                        </thead>
+                        <tbody id="metricsBody"></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div>
+                <div class="card">
+                    <h2>Division Performance Diagnostics (Line Chart)</h2>
+                    <div style="position: relative; height:240px;">
+                        <canvas id="analyticsGraph"></canvas>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <h2>ZCCD Active Process Ledger</h2>
+                    <div id="ledgerContainer"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // System Authentication Logic Configuration
+    document.getElementById('loginForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+        const userInp = document.getElementById('username').value.trim();
+        const passInp = document.getElementById('password').value.trim();
+
+        // Target Credentials Checked
+        if (userInp === 'Minhaj' && passInp === '102333') {
+            sessionStorage.setItem('zccd_auth_session', 'authenticated');
+            document.getElementById('loginError').style.display = 'none';
+            initDashboardPipeline();
+        } else {
+            document.getElementById('loginError').style.display = 'block';
+        }
+    });
+
+    function handleLogout() {
+        sessionStorage.removeItem('zccd_auth_session');
+        window.location.reload();
+    }
+
+    // Local DB Architecture Configuration
+    let dataset = JSON.parse(localStorage.getItem('zccd_workflow_db')) || [];
+    const officers = ['SDE', 'AE 1', 'AE 2', 'SAE-1', 'SAE-2', 'SAE-3'];
+    let lineChartObj = null;
+
+    const blueprint = {
+        "Design": [
+            { id: "note_marked_date", label: "Note Marked Date", type: "date" },
+            { id: "followup_design_team", label: "Followup with Design Team", type: "text", placeholder: "Details of communications" },
+            { id: "design_receival_date", label: "Design Receival Date (Triggers Completion)", type: "date", critical: true }
+        ],
+        "Estimate approval": [
+            { id: "est_pkg_name", label: "Estimate Pkg Name", type: "text", placeholder: "e.g., ZCCD/2026/W-04" },
+            { id: "work_type", label: "Work Type", type: "select", options: ["Civil Construction", "Repair & Maintenance", "Renovation", "Substation Infrastructure", "Boundary Wall/Fencing", "Other"] },
+            { id: "est_description", label: "Description", type: "text", placeholder: "Brief Scope details..." },
+            { id: "est_location", label: "Location", type: "select", options: ["Mymensingh Office Compound", "Ghorashal Complex Area", "Zonal Store Mymensingh", "Jamalpur Hub", "Netrokona Area", "Sherpur Site", "Other District Location"] },
+            { id: "prep_at_pe", label: "Preparation at PE Date", type: "date" },
+            { id: "marked_from_director", label: "Marked from Director Date", type: "date" },
+            { id: "marked_from_chief", label: "Marked from Chief Date (Optional)", type: "date" },
+            { id: "marked_date_to_pe", label: "Marked Date to PE (Triggers Completion)", type: "date", critical: true }
+        ],
+        "Tender related": [
+            { id: "tender_floated", label: "Tender Floated Date", type: "date" },
+            { id: "tender_opened", label: "Tender Opened Date", type: "date" },
+            { id: "evaluation_completed", label: "Evaluation Completed Date", type: "date" },
+            { id: "noa_given", label: "NOA Given Date", type: "date" },
+            { id: "contract_uploaded_date", label: "Contract Uploaded Date (Triggers Completion)", type: "date", critical: true }
+        ],
+        "Site visit": [
+            { id: "site_location", label: "Site Location", type: "text", placeholder: "Mymensingh location details" },
+            { id: "visit_date", label: "Visit Date", type: "date" },
+            { id: "reason_visit", label: "Reason of Visit", type: "text" },
+            { id: "problem_found", label: "Problem Found", type: "text" },
+            { id: "discussed_xen", label: "Discussed with XEN", type: "select", options: ["No", "Yes"] },
+            { id: "decision_made", label: "Decision Made", type: "text" },
+            { id: "decision_implemented_date", label: "Decision Implemented Date", type: "date" },
+            { id: "problem_faced", label: "Any Problem Faced", type: "text" },
+            { id: "rediscussed_xen", label: "Rediscussed with XEN", type: "select", options: ["No", "Yes"] },
+            { id: "completion_date_new", label: "Completion Date After New Decision (Triggers Completion)", type: "date", critical: true }
+        ],
+        "Follow up": [
+            { id: "file_name_ref", label: "File Reference/Name", type: "text" },
+            { id: "visit_date", label: "Follow-up Date", type: "date" },
+            { id: "reason_visit", label: "Reason of Follow up", type: "text" },
+            { id: "problem_found", label: "Bottleneck / Problem Found", type: "text" },
+            { id: "discussed_xen", label: "Discussed with XEN", type: "select", options: ["No", "Yes"] },
+            { id: "decision_made", label: "Action Plan/Decision Made", type: "text" },
+            { id: "decision_implemented_date", label: "Action Implemented Date", type: "date" },
+            { id: "problem_faced", label: "Secondary Problems Faced", type: "text" },
+            { id: "rediscussed_xen", label: "Rediscussed with XEN", type: "select", options: ["No", "Yes"] },
+            { id: "completion_date_new", label: "Completion Date (Triggers Completion)", type: "date", critical: true }
+        ],
+        "App approval": [
+            { id: "app_prep_pe", label: "APP Preparation in PE Date", type: "date" },
+            { id: "app_marked_director", label: "APP Marked by Director Date", type: "date" },
+            { id: "app_marked_chief", label: "Marked by Chief Date", type: "date" },
+            { id: "app_marked_member", label: "Marked by Member Date", type: "date" },
+            { id: "uploaded_egp", label: "Uploaded in e-GP Date", type: "date" },
+            { id: "approved_egp", label: "Approved in e-GP Date (Triggers Completion)", type: "date", critical: true }
+        ],
+        "Budget approval": [
+            { id: "budget_note_prep", label: "Budget Note Preparation Date", type: "date" },
+            { id: "appr_director", label: "Approved by Director Date", type: "date" },
+            { id: "appr_chief", label: "Approved by Chief Date", type: "date" },
+            { id: "appr_controller", label: "Approved by Controller Date", type: "date" },
+            { id: "budget_meeting_faced", label: "Budget Meeting Faced Date", type: "date" },
+            { id: "budget_doc_received", label: "Budget Approval Doc Received (Triggers Completion)", type: "date", critical: true }
+        ],
+        "Reports": [
+            { id: "report_prepared", label: "Reports Prepared Date", type: "date" },
+            { id: "report_signed", label: "Signed Date", type: "date" },
+            { id: "report_marked", label: "Marked Date", type: "date" },
+            { id: "report_stored", label: "Stored Date (Triggers Completion)", type: "date", critical: true }
+        ]
+    };
+
+    function filterAssignees() {
+        const assigner = document.getElementById('assigner').value;
+        const targetMenu = document.getElementById('assignee');
+        targetMenu.innerHTML = '';
+        
+        let selectionArray = (assigner === 'XEN') ? ['SDE', 'AE 1', 'AE 2'] : ['SAE-1', 'SAE-2', 'SAE-3'];
+        
+        selectionArray.forEach(rank => {
+            let op = document.createElement('option');
+            op.value = rank; op.textContent = rank;
+            targetMenu.appendChild(op);
+        });
+    }
+
+    function renderSubtaskFormInputs() {
+        const selectedCat = document.getElementById('taskCategory').value;
+        const container = document.getElementById('dynamicSubtaskFields');
+        container.innerHTML = '';
+
+        blueprint[selectedCat].forEach(field => {
+            let wrap = document.createElement('div');
+            wrap.className = 'form-group';
+            
+            let labelEl = document.createElement('label');
+            labelEl.textContent = field.label;
+            wrap.appendChild(labelEl);
+
+            if (field.type === 'select') {
+                let sel = document.createElement('select');
+                sel.id = `sub_${field.id}`;
+                field.options.forEach(o => {
+                    let opt = document.createElement('option');
+                    opt.value = o; opt.textContent = o;
+                    sel.appendChild(opt);
+                });
+                wrap.appendChild(sel);
+            } else {
+                let inp = document.createElement('input');
+                inp.type = field.type;
+                inp.id = `sub_${field.id}`;
+                if (field.placeholder) inp.placeholder = field.placeholder;
+                wrap.appendChild(inp);
+            }
+            container.appendChild(wrap);
+        });
+    }
+
+    document.getElementById('workflowForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+        const category = document.getElementById('taskCategory').value;
+        const globalDeadline = document.getElementById('deadline').value;
+
+        let subtaskPayload = {};
+        let triggeredCompletionDate = null;
+
+        blueprint[category].forEach(field => {
+            const domVal = document.getElementById(`sub_${field.id}`).value;
+            subtaskPayload[field.id] = domVal;
+            
+            if (field.critical && domVal) {
+                triggeredCompletionDate = domVal;
+            }
+        });
+
+        let status = 'Pending';
+        if (triggeredCompletionDate) {
+            status = (triggeredCompletionDate <= globalDeadline) ? 'Completed-On-Time' : 'Completed-Overdue';
+        }
+
+        const taskRecord = {
+            id: Date.now(),
+            assigner: document.getElementById('assigner').value,
+            assignee: document.getElementById('assignee').value,
+            category: category,
+            deadline: globalDeadline,
+            subtasks: subtaskPayload,
+            status: status,
+            completionDate: triggeredCompletionDate
+        };
+
+        dataset.push(taskRecord);
+        executeSystemRefresh();
+        this.reset();
+        renderSubtaskFormInputs();
+    });
+
+    function updateSubtaskValue(taskId, fieldId, element) {
+        const targetTask = dataset.find(t => t.id === taskId);
+        if (targetTask) {
+            targetTask.subtasks[fieldId] = element.value;
+            
+            const criticalFieldBlueprint = blueprint[targetTask.category].find(f => f.critical);
+            const criticalValue = targetTask.subtasks[criticalFieldBlueprint.id];
+
+            if (criticalValue) {
+                targetTask.completionDate = criticalValue;
+                targetTask.status = (criticalValue <= targetTask.deadline) ? 'Completed-On-Time' : 'Completed-Overdue';
+            } else {
+                targetTask.completionDate = null;
+                targetTask.status = 'Pending';
+            }
+            localStorage.setItem('zccd_workflow_db', JSON.stringify(dataset));
+            renderMetricsTable();
+            renderAnalyticsGraph();
+        }
+    }
+
+    function removeTask(id) {
+        dataset = dataset.filter(t => t.id !== id);
+        executeSystemRefresh();
+    }
+
+    function executeSystemRefresh() {
+        localStorage.setItem('zccd_workflow_db', JSON.stringify(dataset));
+        renderMetricsTable();
+        renderLedgerCards();
+        renderAnalyticsGraph();
+    }
+
+    function renderMetricsTable() {
+        const tbody = document.getElementById('metricsBody');
+        tbody.innerHTML = '';
+
+        officers.forEach(rank => {
+            const totalAssigned = dataset.filter(t => t.assignee === rank).length;
+            const totalOnTime = dataset.filter(t => t.assignee === rank && t.status === 'Completed-On-Time').length;
+
+            tbody.innerHTML += `<tr>
+                <td><strong>${rank}</strong></td>
+                <td><span class="badge bg-tag">${totalAssigned}</span></td>
+                <td><span class="badge bg-success">${totalOnTime}</span></td>
+            </tr>`;
+        });
+    }
+
+    function renderLedgerCards() {
+        const container = document.getElementById('ledgerContainer');
+        container.innerHTML = '';
+
+        if(dataset.length === 0) {
+            container.innerHTML = '<p style="color:#a0aec0; text-align:center; padding:20px;">No operational pipeline data available.</p>';
+            return;
+        }
+
+        [...dataset].reverse().forEach(task => {
+            const today = new Date().toISOString().split('T')[0];
+            const isOverdue = (today > task.deadline) && task.status === 'Pending';
+            
+            let currentBadge = `<span class="badge bg-warn">In Progress</span>`;
+            let borderClass = '';
+
+            if(task.status === 'Completed-On-Time') { currentBadge = `<span class="badge bg-success">On-Time Closed ✓</span>`; borderClass='completed';}
+            else if(task.status === 'Completed-Overdue') { currentBadge = `<span class="badge bg-danger">Overdue Closed</span>`; borderClass='completed';}
+            else if(isOverdue) { currentBadge = `<span class="badge bg-danger">Overdue Pending</span>`; borderClass='overdue';}
+
+            let card = document.createElement('div');
+            card.className = `task-item ${borderClass}`;
+            
+            let innerFieldsHTML = '';
+            blueprint[task.category].forEach(f => {
+                const currentVal = task.subtasks[f.id] || '';
+                if(f.type === 'select') {
+                    let optionsHTML = '';
+                    f.options.forEach(optVal => {
+                        optionsHTML += `<option value="${optVal}" ${currentVal === optVal ? 'selected' : ''}>${optVal}</option>`;
+                    });
+                    innerFieldsHTML += `
+                        <div class="subtask-field">
+                            <span>${f.label}</span>
+                            <select onchange="updateSubtaskValue(${task.id}, '${f.id}', this)">${optionsHTML}</select>
+                        </div>`;
+                } else {
+                    innerFieldsHTML += `
+                        <div class="subtask-field">
+                            <span>${f.label}</span>
+                            <input type="${f.type}" value="${currentVal}" onchange="updateSubtaskValue(${task.id}, '${f.id}', this)">
+                        </div>`;
+                }
+            });
+
+            let taskHeaderSubtitle = '';
+            if(task.category === "Estimate approval" && task.subtasks.est_pkg_name) {
+                taskHeaderSubtitle = ` — <span style="color:var(--accent); font-weight:bold;">${task.subtasks.est_pkg_name}</span>`;
+            }
+
+            card.innerHTML = `
+                <div style="display:flex; justify-content:space-between; align-items:center; width:100%;">
+                    <div>
+                        <span class="badge bg-tag">${task.category}</span> ${taskHeaderSubtitle}
+                        <span style="font-size:12px; margin-left:10px; color:#718096;">From: <strong>${task.assigner}</strong> ➔ Target: <strong>${task.assignee}</strong></span>
+                    </div>
+                    <div>${currentBadge}</div>
+                </div>
+                <div style="margin-top:8px; font-size:13px;">Global Deadline Target: <strong style="color:var(--danger);">${task.deadline}</strong></div>
+                
+                <div class="subtask-grid">${innerFieldsHTML}</div>
+                
+                <div style="margin-top:12px; text-align:right;">
+                    <button class="badge bg-danger" style="width:auto; padding:4px 10px;" onclick="removeTask(${task.id})">Purge Entry</button>
+                </div>
+            `;
+            container.appendChild(card);
+        });
+    }
+
+    function renderAnalyticsGraph() {
+        const ctx = document.getElementById('analyticsGraph').getContext('2d');
+        
+        const assignedDataset = officers.map(o => dataset.filter(t => t.assignee === o).length);
+        const activeCompletionDataset = officers.map(o => dataset.filter(t => t.assignee === o && t.status === 'Completed-On-Time').length);
+
+        if (lineChartObj) { lineChartObj.destroy(); }
+
+        lineChartObj = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: officers,
+                datasets: [
+                    {
+                        label: 'Total Structural Assignments',
+                        data: assignedDataset,
+                        borderColor: '#2b6cb0',
+                        backgroundColor: 'rgba(43,108,176,0.05)',
+                        borderWidth: 2,
+                        tension: 0.15,
+                        fill: true
+                    },
+                    {
+                        label: 'Successful Closures (On-Time)',
+                        data: activeCompletionDataset,
+                        borderColor: '#38a169',
+                        backgroundColor: 'rgba(56,161,105,0.05)',
+                        borderWidth: 3,
+                        tension: 0.15,
+                        fill: true
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    y: { beginAtZero: true, ticks: { stepSize: 1, color: '#4a5568' } },
+                    x: { ticks: { color: '#4a5568' } }
+                },
+                plugins: { legend: { labels: { font: { weight: 'bold' } } } }
+            }
+        });
+    }
+
+    // Initialize Dashboard after verification passes
+    function initDashboardPipeline() {
+        document.getElementById('loginOverlay').style.display = 'none';
+        document.getElementById('dashboardContent').style.display = 'block';
+        filterAssignees();
+        renderSubtaskFormInputs();
+        executeSystemRefresh();
+    }
+
+    window.onload = function() {
+        // Verification Session Check
+        if (sessionStorage.getItem('zccd_auth_session') === 'authenticated') {
+            initDashboardPipeline();
+        }
+    };
+</script>
+</body>
+</html>
