@@ -28,7 +28,6 @@
 
         .container { max-width: 1400px; margin: 0 auto; }
         
-        /* Login Screen Overlay Styling */
         #loginOverlay {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background: rgba(26, 54, 93, 0.95); display: flex;
@@ -46,7 +45,6 @@
         .login-box button:hover { background-color: var(--accent); }
         .error-msg { color: var(--danger); font-size: 13px; margin-top: 10px; display: none; font-weight: 600;}
 
-        /* Main Dashboard Layout */
         #dashboardContent { display: none; }
 
         header {
@@ -249,13 +247,11 @@
 </div>
 
 <script>
-    // System Authentication Logic Configuration
     document.getElementById('loginForm').addEventListener('submit', function(e) {
         e.preventDefault();
         const userInp = document.getElementById('username').value.trim();
         const passInp = document.getElementById('password').value.trim();
 
-        // Target Credentials Checked
         if (userInp === 'Minhaj' && passInp === '102333') {
             sessionStorage.setItem('zccd_auth_session', 'authenticated');
             document.getElementById('loginError').style.display = 'none';
@@ -270,7 +266,6 @@
         window.location.reload();
     }
 
-    // Local DB Architecture Configuration
     let dataset = JSON.parse(localStorage.getItem('zccd_workflow_db')) || [];
     const officers = ['SDE', 'AE 1', 'AE 2', 'SAE-1', 'SAE-2', 'SAE-3'];
     let lineChartObj = null;
@@ -283,7 +278,7 @@
         ],
         "Estimate approval": [
             { id: "est_pkg_name", label: "Estimate Pkg Name", type: "text", placeholder: "e.g., ZCCD/2026/W-04" },
-            { id: "work_type", label: "Work Type", type: "select", options: ["Civil Construction", "Repair & Maintenance", "Renovation", "Substation Infrastructure", "Boundary Wall/Fencing", "Other"] },
+            { id: "work_type", label: "Work Type", type: "select", options: ["1. Work", "2. Supply", "3. Service", "4. Yearly"] },
             { id: "est_description", label: "Description", type: "text", placeholder: "Brief Scope details..." },
             { id: "est_location", label: "Location", type: "select", options: ["Mymensingh Office Compound", "Ghorashal Complex Area", "Zonal Store Mymensingh", "Jamalpur Hub", "Netrokona Area", "Sherpur Site", "Other District Location"] },
             { id: "prep_at_pe", label: "Preparation at PE Date", type: "date" },
@@ -339,6 +334,7 @@
             { id: "budget_doc_received", label: "Budget Approval Doc Received (Triggers Completion)", type: "date", critical: true }
         ],
         "Reports": [
+            { id: "report_description", label: "Description of Report", type: "textarea", placeholder: "Enter dynamic description metrics..." },
             { id: "report_prepared", label: "Reports Prepared Date", type: "date" },
             { id: "report_signed", label: "Signed Date", type: "date" },
             { id: "report_marked", label: "Marked Date", type: "date" },
@@ -351,7 +347,7 @@
         const targetMenu = document.getElementById('assignee');
         targetMenu.innerHTML = '';
         
-        let selectionArray = (assigner === 'XEN') ? ['SDE', 'AE 1', 'AE 2'] : ['SAE-1', 'SAE-2', 'SAE-3'];
+        let selectionArray = (assigner === 'XEN') ? ['SDE', 'AE 1', 'AE 2', 'SAE-1', 'SAE-2', 'SAE-3'] : ['SAE-1', 'SAE-2', 'SAE-3'];
         
         selectionArray.forEach(rank => {
             let op = document.createElement('option');
@@ -382,6 +378,12 @@
                     sel.appendChild(opt);
                 });
                 wrap.appendChild(sel);
+            } else if (field.type === 'textarea') {
+                let txt = document.createElement('textarea');
+                txt.id = `sub_${field.id}`;
+                txt.rows = 3;
+                if (field.placeholder) txt.placeholder = field.placeholder;
+                wrap.appendChild(txt);
             } else {
                 let inp = document.createElement('input');
                 inp.type = field.type;
@@ -517,6 +519,12 @@
                             <span>${f.label}</span>
                             <select onchange="updateSubtaskValue(${task.id}, '${f.id}', this)">${optionsHTML}</select>
                         </div>`;
+                } else if(f.type === 'textarea') {
+                    innerFieldsHTML += `
+                        <div class="subtask-field" style="grid-column: 1 / -1;">
+                            <span>${f.label}</span>
+                            <textarea rows="2" onchange="updateSubtaskValue(${task.id}, '${f.id}', this)">${currentVal}</textarea>
+                        </div>`;
                 } else {
                     innerFieldsHTML += `
                         <div class="subtask-field">
@@ -596,7 +604,6 @@
         });
     }
 
-    // Initialize Dashboard after verification passes
     function initDashboardPipeline() {
         document.getElementById('loginOverlay').style.display = 'none';
         document.getElementById('dashboardContent').style.display = 'block';
@@ -606,7 +613,6 @@
     }
 
     window.onload = function() {
-        // Verification Session Check
         if (sessionStorage.getItem('zccd_auth_session') === 'authenticated') {
             initDashboardPipeline();
         }
