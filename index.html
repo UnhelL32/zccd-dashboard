@@ -3,715 +3,1179 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ZCCD Mymensingh - Engineering Task Engine</title>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <title>Project Diary Matrix - Minhaj Civil IUT 10</title>
     <style>
         :root {
-            --bg-color: #f7fafc;
+            --bg-color: #f0f4f8;
             --card-bg: #ffffff;
-            --primary: #1a365d;
-            --accent: #2b6cb0;
-            --text: #2d3748;
-            --border: #e2e8f0;
-            --success: #38a169;
-            --danger: #e53e3e;
-            --warning: #dd6b20;
-            --purple: #805ad5;
+            --text-main: #1e293b;
+            --text-muted: #64748b;
+            --accent: #3b82f6;
+            --accent-gradient: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+            --border-color: #e2e8f0;
+            --danger: #ef4444;
+            --danger-gradient: linear-gradient(135deg, #ef4444 0%, #b91c1c 100%);
+            --success: #10b981;
+            --success-gradient: linear-gradient(135deg, #10b981 0%, #047857 100%);
+            --warning: #f59e0b;
+            --warning-gradient: linear-gradient(135deg, #f59e0b 0%, #b45309 100%);
+            --execution: #8b5cf6;
+            --execution-gradient: linear-gradient(135deg, #8b5cf6 0%, #6d28d9 100%);
+            --radius-lg: 12px;
+            --radius-md: 8px;
+            --transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        /* --- DYNAMIC NIGHT THEME OVERRIDES --- */
+        body.dark-theme {
+            --bg-color: #0f172a;
+            --card-bg: #1e293b;
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --border-color: #334155;
         }
 
         body {
-            font-family: 'Segoe UI', system-ui, sans-serif;
+            font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
             background-color: var(--bg-color);
-            color: var(--text);
+            color: var(--text-main);
+            line-height: 1.5;
             margin: 0;
-            padding: 20px;
+            padding: 15px;
+            transition: background-color var(--transition), color var(--transition);
         }
 
-        .container { max-width: 1500px; margin: 0 auto; }
+        .container { max-width: 1100px; margin: 0 auto; }
         
-        #loginOverlay {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(26, 54, 93, 0.95); display: flex;
-            justify-content: center; align-items: center; z-index: 1000;
-        }
-
-        .login-box {
-            background: white; padding: 30px; border-radius: 8px;
-            width: 100%; max-width: 380px; box-shadow: 0 10px 25px rgba(0,0,0,0.2);
-            text-align: center;
-        }
-        .login-box h2 { color: var(--primary); margin-top: 0; margin-bottom: 5px; font-size: 20px; }
-        .login-box p { font-size: 13px; color: #718096; margin-bottom: 20px; }
-        .login-box button { background-color: var(--primary); margin-top: 10px; }
-        .login-box button:hover { background-color: var(--accent); }
-        .error-msg { color: var(--danger); font-size: 13px; margin-top: 10px; display: none; font-weight: 600;}
-
-        #dashboardContent { display: none; }
-
         header {
-            background: linear-gradient(135deg, var(--primary), var(--accent));
-            color: white; padding: 20px; border-radius: 8px; margin-bottom: 20px;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.05); display: flex;
-            justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px;
+            text-align: center;
+            margin-bottom: 30px;
+            padding: 20px;
+            background: var(--card-bg);
+            border-radius: var(--radius-lg);
+            box-shadow: 0 4px 20px rgba(0,0,0,0.03);
+            border: 1px solid var(--border-color);
+            position: relative;
+            transition: background-color var(--transition), border-color var(--transition);
         }
-        .header-title h1 { margin: 0; font-size: 24px; letter-spacing: 0.5px; }
-        .header-title p { margin: 5px 0 0 0; opacity: 0.9; font-size: 14px; }
-        
-        .header-meta-box { display: flex; align-items: center; gap: 12px; }
-        .header-signature {
-            background: rgba(255, 255, 255, 0.15); padding: 8px 15px;
-            border-radius: 6px; border-left: 4px solid #fff; font-size: 13px; font-weight: 500;
+        header h1 { 
+            margin: 0; 
+            background: var(--accent-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            font-size: 2.2rem; 
+            font-weight: 800;
+            letter-spacing: -0.5px;
+            padding-right: 100px;
         }
-        .btn-logout {
-            background: #e53e3e; color: white; border: none; padding: 8px 12px;
-            border-radius: 4px; font-size: 12px; cursor: pointer; font-weight: bold; width: auto;
-        }
-        .btn-logout:hover { background: #c53030; }
+        header p { margin: 8px 0 0; color: var(--text-muted); font-weight: 600; font-size: 0.95rem; }
 
-        .grid { display: grid; grid-template-columns: 1fr; gap: 20px; }
-        @media (min-width: 992px) { .grid { grid-template-columns: 460px 1fr; } }
+        @media (max-width: 600px) {
+            header h1 { padding-right: 0; font-size: 1.8rem; }
+            header { padding-top: 60px; }
+        }
 
-        .card {
-            background: var(--card-bg); border-radius: 8px; padding: 20px;
-            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); border: 1px solid var(--border);
+        .app-view { display: none; animation: fadeIn 0.3s ease; }
+        .app-view.active { display: block; }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(8px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .box {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-lg);
+            padding: 20px;
             margin-bottom: 20px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.01);
+            transition: background-color var(--transition), border-color var(--transition);
         }
 
-        .card h2 {
-            margin-top: 0; font-size: 15px; text-transform: uppercase;
-            letter-spacing: 0.5px; border-bottom: 2px solid var(--border);
-            padding-bottom: 8px; color: var(--primary);
+        .box-title {
+            font-size: 1.25rem;
+            font-weight: 800;
+            color: var(--text-main);
+            margin-top: 0;
+            margin-bottom: 20px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
         }
 
-        .form-group { margin-bottom: 12px; }
-        label { display: block; margin-bottom: 4px; font-weight: 600; font-size: 13px; color: #4a5568;}
-        input, select, textarea {
-            width: 100%; padding: 8px; border: 1px solid var(--border);
-            border-radius: 4px; box-sizing: border-box; font-size: 13px;
+        .wizard-progress {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+            justify-content: space-between;
+            margin-bottom: 25px;
+            background: var(--border-color);
+            padding: 8px;
+            border-radius: 8px;
+            transition: background-color var(--transition);
         }
         
-        .subtask-panel {
-            background: #f8fafc; border: 1px dashed var(--accent);
-            padding: 12px; border-radius: 6px; margin-top: 10px;
+        .wizard-step {
+            flex: 1 1 130px;
+            font-size: 0.72rem;
+            font-weight: 700;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            text-align: center;
+            padding: 10px 4px;
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-sizing: border-box;
+            transition: var(--transition);
         }
-        .subtask-panel h3 { margin: 0 0 8px 0; font-size: 13px; color: var(--accent); }
 
-        button {
-            background-color: var(--accent); color: white; border: none;
-            padding: 10px; border-radius: 4px; cursor: pointer;
-            font-weight: bold; width: 100%; font-size: 14px; transition: background 0.2s;
+        .wizard-step.current {
+            color: #ffffff;
+            background: var(--accent-gradient);
+            border-color: var(--accent);
         }
-        button:hover { background-color: var(--primary); }
 
-        .metrics-table { width: 100%; border-collapse: collapse; }
-        .metrics-table th, .metrics-table td {
-            border: 1px solid var(--border); padding: 8px; text-align: center; font-size: 13px;
+        @media (max-width: 768px) {
+            .wizard-step {
+                flex: 1 1 calc(50% - 6px);
+                font-size: 0.7rem;
+                padding: 8px 4px;
+            }
         }
-        .metrics-table th { background-color: #edf2f7; }
 
-        .task-item {
-            border: 1px solid var(--border); border-left: 5px solid var(--accent);
-            padding: 15px; margin-bottom: 15px; border-radius: 4px; background: #fff;
+        .sub-box {
+            border-left: 4px solid var(--accent);
+            padding-left: 15px;
+            margin: 15px 0;
+            background: var(--bg-color);
+            border-radius: 0 var(--radius-md) var(--radius-md) 0;
+            padding-top: 10px;
+            padding-bottom: 10px;
+            transition: background-color var(--transition), border-color var(--transition);
         }
-        .task-item.completed { border-left-color: var(--success); background-color: #f0fff4; }
-        .task-item.overdue { border-left-color: var(--danger); background-color: #fff5f5; }
 
-        .badge {
-            display: inline-block; padding: 2px 6px; border-radius: 4px;
-            font-size: 11px; font-weight: bold; color: white;
+        label {
+            display: block;
+            font-weight: 600;
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            margin-bottom: 6px;
+            text-transform: uppercase;
         }
-        .bg-tag { background-color: #4a5568; }
-        .bg-success { background-color: var(--success); }
-        .bg-danger { background-color: var(--danger); }
-        .bg-warn { background-color: var(--warning); }
-        .bg-purple { background-color: var(--purple); }
 
-        .subtask-grid {
-            display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-            gap: 12px; margin-top: 10px; background: #f7fafc; padding: 12px; border-radius: 4px;
-            border: 1px solid var(--border);
+        input, textarea, select {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 15px;
+            border: 2px solid var(--border-color);
+            border-radius: var(--radius-md);
+            font-size: 0.95rem;
+            font-weight: 500;
+            box-sizing: border-box;
+            background: var(--bg-color);
+            color: var(--text-main);
+            transition: var(--transition);
         }
-        .subtask-field { font-size: 12px; }
-        .subtask-field span { font-weight: 600; color: #4a5568; display:block; margin-bottom:2px;}
-        .registry-input-group { display: flex; gap: 4px; }
-        .registry-input-group select { flex: 1; }
-        .registry-input-group input { flex: 1; }
+        input:focus, textarea:focus, select:focus {
+            background: var(--card-bg);
+            border-color: var(--accent);
+            box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.1);
+            outline: none;
+        }
+        textarea { min-height: 80px; resize: vertical; }
 
-        .charts-container {
-            display: grid; grid-template-columns: 1fr; gap: 20px; margin-bottom: 20px;
+        .btn-footer-nav {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 25px;
+            border-top: 1px solid var(--border-color);
+            padding-top: 15px;
+            gap: 10px;
         }
-        @media (min-width: 768px) { .charts-container { grid-template-columns: 1fr 1fr; } }
-        .chart-box { min-height: 250px; position: relative; }
+
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: var(--radius-md);
+            font-weight: 700;
+            font-size: 0.9rem;
+            cursor: pointer;
+            color: #fff;
+            background: var(--accent-gradient);
+            box-shadow: 0 4px 10px rgba(59, 130, 246, 0.2);
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            transition: var(--transition);
+        }
+        .btn:hover { 
+            transform: translateY(-2px); 
+            opacity: 0.95;
+        }
+        .btn:active { transform: translateY(0); }
+        .btn-danger { background: var(--danger-gradient); box-shadow: 0 4px 10px rgba(239, 68, 68, 0.2); }
+        .btn-success { background: var(--success-gradient); box-shadow: 0 4px 10px rgba(16, 185, 129, 0.2); }
+        .btn-secondary { background: #64748b; box-shadow: 0 4px 10px rgba(100, 116, 139, 0.2); }
+        .btn-execution { background: var(--execution-gradient); box-shadow: 0 4px 10px rgba(139, 92, 246, 0.2); }
+        .btn-sm { padding: 6px 12px; font-size: 0.8rem; box-shadow: none !important; }
+        .btn-block { width: 100%; padding: 12px; font-size: 1rem; border-radius: var(--radius-lg); }
+
+        .year-header {
+            background: var(--text-main);
+            color: var(--card-bg);
+            padding: 10px 15px;
+            font-size: 1.25rem;
+            font-weight: bold;
+            border-radius: var(--radius-md);
+            margin-top: 30px;
+            transition: background-color var(--transition), color var(--transition);
+        }
+        .project-card {
+            border: 1px solid var(--border-color);
+            background: var(--card-bg);
+            margin-top: 15px;
+            border-radius: 6px;
+            overflow: hidden;
+            transition: background-color var(--transition), border-color var(--transition);
+        }
+        .project-summary {
+            padding: 15px;
+            background: var(--bg-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 10px;
+            transition: background-color var(--transition);
+        }
+        .project-meta-info { font-size: 0.95rem; }
+        .project-meta-info code { background: var(--border-color); padding: 2px 6px; border-radius: 4px; color: var(--accent); transition: var(--transition); }
+        .btn-group { display: flex; gap: 8px; flex-wrap: wrap; }
         
-        .sort-btn {
-            background: #edf2f7; color: var(--text); border: 1px solid var(--border);
-            padding: 4px 8px; font-size: 11px; border-radius: 4px; cursor: pointer; width: auto; font-weight: normal;
+        .db-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 25px;
+            font-size: 0.85rem;
         }
-        .sort-btn:hover { background: #e2e8f0; }
+        .db-table th {
+            background: var(--bg-color);
+            color: var(--text-main);
+            text-align: left;
+            padding: 8px 10px;
+            border: 1px solid var(--border-color);
+            transition: background-color var(--transition), border-color var(--transition), color var(--transition);
+        }
+        .db-table td { padding: 8px 10px; border: 1px solid var(--border-color); vertical-align: top; background: var(--card-bg); transition: background-color var(--transition), border-color var(--transition); }
+        .db-table tr:nth-child(even) td { background: var(--bg-color); }
+        .table-responsive { overflow-x: auto; width: 100%; }
+        
+        .gdrive-link-badge {
+            display: inline-block;
+            background: #e8f0fe;
+            color: #1a73e8;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-weight: 600;
+            font-size: 0.75rem;
+            text-decoration: none;
+            margin-top: 5px;
+            margin-right: 6px;
+            border: 1px solid #d2e3fc;
+        }
+        body.dark-theme .gdrive-link-badge {
+            background: #1e3a8a;
+            color: #38bdf8;
+            border-color: #1e40af;
+        }
 
-        .wo-tag-list {
-            display: flex; flex-wrap: wrap; gap: 4px; justify-content: center;
-        }
-        .wo-sub-badge {
-            background: #edf2f7; color: #4a5568; font-size: 11px; padding: 2px 6px; border-radius: 3px; border: 1px solid #cbd5e0;
+        .link-container-wrapper {
+            background: var(--bg-color);
+            border: 2px dashed var(--border-color);
+            padding: 15px;
+            border-radius: var(--radius-lg);
+            margin-bottom: 15px;
+            transition: background-color var(--transition), border-color var(--transition);
         }
     </style>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap" rel="stylesheet">
 </head>
 <body>
 
-<div id="loginOverlay">
-    <div class="login-box">
-        <h2>ZCCD Mymensingh Portal</h2>
-        <p>Please log in with admin verification credentials</p>
-        <form id="loginForm">
-            <div class="form-group" style="text-align: left;">
-                <label for="username">User ID</label>
-                <input type="text" id="username" required placeholder="Enter User ID">
+<div class="container">
+    <header>
+        <h1>Project Diary &amp; Management Matrix</h1>
+        <p>Created by Minhaj Civil IUT 10</p>
+        <button class="btn btn-sm btn-secondary" id="theme-toggle-btn" onclick="toggleTheme()" style="position: absolute; top: 20px; right: 20px;">🌙 Dark Mode</button>
+    </header>
+
+    <div id="view-home" class="app-view active">
+        <div class="box" style="background: var(--border-color); display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; padding: 15px; border: none;">
+            <div style="font-size:0.9rem; font-weight:600; color:var(--text-main);">Database Backup &amp; Migration Utilities:</div>
+            <div class="btn-group">
+                <button class="btn btn-sm" onclick="exportDataToCSV()">📥 Export Master CSV</button>
+                <label class="btn btn-sm btn-success" style="margin:0; cursor:pointer;">
+                    📤 Import CSV File <input type="file" id="csv-file-importer" accept=".csv" style="display:none;" onchange="importDataFromCSV(event)">
+                </label>
             </div>
-            <div class="form-group" style="text-align: left;">
-                <label for="password">Password</label>
-                <input type="password" id="password" required placeholder="Enter Password">
-            </div>
-            <button type="submit">Verify & Authenticate</button>
-            <div id="loginError" class="error-msg">Invalid User ID or Password!</div>
-        </form>
+        </div>
+
+        <div class="box">
+            <div class="box-title">Master Project Database (Yearwise Summary)</div>
+            <div id="masterDbContainer"></div>
+        </div>
+        <button class="btn btn-success btn-block" onclick="startNewProjectWizard()">＋ Create New Project Entry Record</button>
     </div>
-</div>
 
-<div id="dashboardContent">
-    <div class="container">
-        <header>
-            <div class="header-title">
-                <h1>ZCCD Mymensingh - BPDB</h1>
-                <p>Operational Task Pipeline Engine & Performance Analytics Dashboard</p>
+    <div id="view-full-details" class="app-view">
+        <div class="box">
+            <div class="box-title" style="display:flex; justify-content:space-between; align-items:center;">
+                <span id="details-page-title">Project Deep-Dive Records</span>
+                <button class="btn btn-sm btn-success" onclick="window.print()">🖨️ Print Project Dossier</button>
             </div>
-            <div class="header-meta-box">
-                <div class="header-signature">
-                    Created by: <strong>Minhaj, SDE, 102333</strong>
-                </div>
-                <button class="btn-logout" onclick="handleLogout()">Log Out</button>
-            </div>
-        </header>
+            
+            <div id="fullDetailsRenderContainer"></div>
 
-        <div class="grid">
-            <div>
-                <div class="card">
-                    <h2>Deploy Enterprise Task</h2>
-                    <form id="workflowForm">
-                        <div class="form-group">
-                            <label for="assigner">Assigned By</label>
-                            <select id="assigner" required onchange="filterAssignees()">
-                                <option value="XEN">XEN (Executive Engineer)</option>
-                                <option value="SDE">SDE (Sub-Divisional Engineer)</option>
-                                <option value="AE 1">AE 1</option>
-                                <option value="AE 2">AE 2</option>
-                            </select>
-                        </div>
-                        <div class="form-group">
-                            <label for="assignee">Assign To</label>
-                            <select id="assignee" required></select>
-                        </div>
-                        <div class="form-group">
-                            <label for="taskCategory">Task Category Structure</label>
-                            <select id="taskCategory" required onchange="renderSubtaskFormInputs()">
-                                <option value="Design">1. Design</option>
-                                <option value="Estimate approval">2. Estimate approval</option>
-                                <option value="Tender related" selected>3. Tender related</option>
-                                <option value="Site visit">4. Site visit</option>
-                                <option value="Follow up">5. Follow up</option>
-                                <option value="App approval">6. App approval</option>
-                                <option value="Budget approval">7. Budget approval</option>
-                                <option value="Reports">8. Reports</option>
-                            </select>
-                        </div>
-                        <div class="form-group">
-                            <label for="deadline">Global Target Deadline</label>
-                            <input type="date" id="deadline" required>
-                        </div>
-
-                        <div class="subtask-panel">
-                            <h3>Workflow Process Sub-components</h3>
-                            <div id="dynamicSubtaskFields"></div>
-                        </div>
-                        
-                        <button type="submit" style="margin-top:15px;">Commit Task to Ledger</button>
-                    </form>
-                </div>
-
-                <div class="card">
-                    <h2>Target Performance Matrix</h2>
-                    <table class="metrics-table">
-                        <thead>
-                            <tr>
-                                <th>Rank</th>
-                                <th>Total Assigned</th>
-                                <th>On-Time Completed</th>
-                            </tr>
-                        </thead>
-                        <tbody id="metricsBody"></tbody>
-                    </table>
-                </div>
-            </div>
-
-            <div>
-                <div class="charts-container">
-                    <div class="card">
-                        <h2>Assigned Tasks Index</h2>
-                        <div class="chart-box">
-                            <canvas id="assignedBarChart"></canvas>
-                        </div>
-                    </div>
-                    <div class="card">
-                        <h2>Successful Closures vs Overdue / Pending</h2>
-                        <div class="chart-box">
-                            <canvas id="completionBarChart"></canvas>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="card">
-                    <h2>ZCCD Active Process Ledger</h2>
-                    <div id="ledgerContainer"></div>
-                </div>
-
-                <div class="card">
-                    <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid var(--border); padding-bottom: 8px;">
-                        <h2 style="margin: 0; border: none;">Winning Bidder Procurement Ledger</h2>
-                        <button class="sort-btn" onclick="toggleBidderSort()">Sort by Name (A-Z / Z-A)</button>
-                    </div>
-                    <div style="overflow-x: auto; margin-top: 12px;">
-                        <table class="metrics-table" style="background: #fff;">
-                            <thead>
-                                <tr style="background-color: #f7fafc;">
-                                    <th>Winning Bidder Name</th>
-                                    <th>Associated W/O Numbers</th>
-                                    <th>Awarded Works Count</th>
-                                    <th>Total Work Order Value (BDT)</th>
-                                </tr>
-                            </thead>
-                            <tbody id="bidderDatabaseBody"></tbody>
-                        </table>
-                    </div>
-                </div>
+            <div class="btn-footer-nav">
+                <button class="btn btn-secondary" onclick="navigateToHome()">← Back to Homepage Database</button>
             </div>
         </div>
     </div>
+
+    <div id="view-wizard-p1" class="app-view">
+        <div class="wizard-progress">
+            <span class="wizard-step current">1. Metadata</span>
+            <span class="wizard-step">2. Logs &amp; Decisions</span>
+            <span class="wizard-step">3. Layouts &amp; Drawings</span>
+            <span class="wizard-step">4. Budget Approval</span>
+            <span class="wizard-step">5. Tender Process</span>
+            <span class="wizard-step">6. Work Execution</span>
+        </div>
+        <div class="box">
+            <div class="box-title">Step 1: Core Project Parameters</div>
+            <label>Project ID *</label>
+            <input type="text" id="w-projId" placeholder="e.g., IUT-CIVIL-2026-99">
+            <label>Financial Year (FY) *</label>
+            <input type="text" id="w-projFy" placeholder="e.g., 2026-2027">
+            <label>Name of Project *</label>
+            <input type="text" id="w-projName" placeholder="Enter full administrative name">
+            <label>Details of Project</label>
+            <textarea id="w-projDetails" placeholder="Scope details, measurements, geo-locations..."></textarea>
+            
+            <div class="link-container-wrapper gdrive-input-box-area">
+                <label style="color:var(--accent-light);">Link Google Drive Reference Documents (Unlimited)</label>
+                <div id="p1-links-list"></div>
+                <button class="btn btn-sm" type="button" onclick="addNewDriveLinkInputRow('p1-links-list')">＋ Attach Drive Link</button>
+            </div>
+
+            <div class="btn-footer-nav">
+                <button class="btn btn-secondary" onclick="navigateToHome()">← Return Home</button>
+                <button class="btn" onclick="saveP1AndNext()">Next Page (Logs) →</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="view-wizard-p2" class="app-view">
+        <div class="wizard-progress">
+            <span class="wizard-step">1. Metadata</span>
+            <span class="wizard-step current">2. Logs &amp; Decisions</span>
+            <span class="wizard-step">3. Layouts &amp; Drawings</span>
+            <span class="wizard-step">4. Budget Approval</span>
+            <span class="wizard-step">5. Tender Process</span>
+            <span class="wizard-step">6. Work Execution</span>
+        </div>
+        <div class="box">
+            <div class="box-title">Step 2: Add Datewise Operational Diary Entry</div>
+            <label>Log Entry Target Date</label>
+            <input type="date" id="p2-date">
+            
+            <label>Datewise Plan Details</label>
+            <textarea id="p2-plan" placeholder="Operational milestones planned..."></textarea>
+
+            <label>Datewise Important Decision</label>
+            <textarea id="p2-decision" placeholder="Resolutions or parameters chosen..."></textarea>
+            <div class="sub-box">
+                <label>Datewise Work Executed As Per Decision</label>
+                <textarea id="p2-work" placeholder="Sub-part: Work completed on site..."></textarea>
+            </div>
+
+            <label>Datewise Problem Faced</label>
+            <textarea id="p2-problem" placeholder="Delays, materials, engineering hurdles..."></textarea>
+            <div class="sub-box">
+                <label>Solutions Discussed</label>
+                <textarea id="p2-solDisc" placeholder="Options or brainstorming notes..."></textarea>
+                <label style="margin-top:10px;">Solutions Implemented</label>
+                <textarea id="p2-solImpl" placeholder="Final countermeasure deployment details..."></textarea>
+            </div>
+
+            <div class="link-container-wrapper gdrive-input-box-area">
+                <label style="color:var(--accent-light);">Attach Google Drive Docs/Images to this Log Entry</label>
+                <div id="p2-links-list"></div>
+                <button class="btn btn-sm" type="button" onclick="addNewDriveLinkInputRow('p2-links-list')">＋ Attach Drive Link</button>
+            </div>
+
+            <button class="btn btn-success" onclick="commitP2Log()">Commit Dynamic Log Row</button>
+            <div id="p2-running-table-container" style="margin-top:20px; overflow-x:auto;"></div>
+
+            <div class="btn-footer-nav">
+                <button class="btn btn-secondary" onclick="switchView('view-wizard-p1')">← Previous</button>
+                <button class="btn" onclick="switchView('view-wizard-p3')">Next Page (Design) →</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="view-wizard-p3" class="app-view">
+        <div class="wizard-progress">
+            <span class="wizard-step">1. Metadata</span>
+            <span class="wizard-step">2. Logs &amp; Decisions</span>
+            <span class="wizard-step current">3. Layouts &amp; Drawings</span>
+            <span class="wizard-step">4. Budget Approval</span>
+            <span class="wizard-step">5. Tender Process</span>
+            <span class="wizard-step">6. Work Execution</span>
+        </div>
+        <div class="box">
+            <div class="box-title">Step 3: Layout Tracking &amp; Structural Drawings</div>
+            <label>Date</label>
+            <input type="date" id="p3-date">
+            <label>Datewise Draft Layout Details</label>
+            <textarea id="p3-draft" placeholder="Alignments, survey notes, spatial adjustments..."></textarea>
+            <label>Note Sent to Layout Committee / Design &amp; Drawing Dept.</label>
+            <textarea id="p3-note" placeholder="Memo reference, issues submitted for clearance..."></textarea>
+
+            <div class="link-container-wrapper gdrive-input-box-area">
+                <label style="color:var(--accent-light);">Attach Layout Blueprints/Drawings (Google Drive Link)</label>
+                <div id="p3-links-list"></div>
+                <button class="btn btn-sm" type="button" onclick="addNewDriveLinkInputRow('p3-links-list')">＋ Attach Drive Link</button>
+            </div>
+
+            <button class="btn btn-success" onclick="commitP3Log()">Commit Design Log Row</button>
+            <div id="p3-running-table-container" style="margin-top:20px; overflow-x:auto;"></div>
+
+            <div class="btn-footer-nav">
+                <button class="btn btn-secondary" onclick="switchView('view-wizard-p2')">← Previous</button>
+                <button class="btn" onclick="switchView('view-wizard-p4')">Next Page (Budget Approval) →</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="view-wizard-p4" class="app-view">
+        <div class="wizard-progress">
+            <span class="wizard-step">1. Metadata</span>
+            <span class="wizard-step">2. Logs &amp; Decisions</span>
+            <span class="wizard-step">3. Layouts &amp; Drawings</span>
+            <span class="wizard-step current">4. Budget Approval</span>
+            <span class="wizard-step">5. Tender Process</span>
+            <span class="wizard-step">6. Work Execution</span>
+        </div>
+        <div class="box">
+            <div class="box-title">Step 4: Budget Approval Mapping</div>
+            <label>Log Reference Date</label>
+            <input type="date" id="p4-date">
+            <label>Budget Type</label>
+            <input type="text" id="p4-type" placeholder="e.g., Capital, Revenue Allocation, Grant Fund">
+            <label>Datewise Budget Decisions</label>
+            <textarea id="p4-decision" placeholder="Sanctions, modifications, revisions..."></textarea>
+            
+            <div style="display:grid; grid-template-columns: 1fr 1fr; gap:15px;">
+                <div>
+                    <label>Budget Receive Date</label>
+                    <input type="date" id="p4-recDate">
+                </div>
+                <div>
+                    <label>Amount Received</label>
+                    <input type="number" id="p4-amount" placeholder="0.00">
+                </div>
+            </div>
+
+            <div class="link-container-wrapper gdrive-input-box-area">
+                <label style="color:var(--accent-light);">Attach Budget Approvals / Scan Copies (Google Drive)</label>
+                <div id="p4-links-list"></div>
+                <button class="btn btn-sm" type="button" onclick="addNewDriveLinkInputRow('p4-links-list')">＋ Attach Drive Link</button>
+            </div>
+
+            <button class="btn btn-success" onclick="commitP4Log()">Commit Budget Log Row</button>
+            <div id="p4-running-table-container" style="margin-top:20px; overflow-x:auto;"></div>
+
+            <div class="btn-footer-nav">
+                <button class="btn btn-secondary" onclick="switchView('view-wizard-p3')">← Previous</button>
+                <button class="btn" onclick="switchView('view-wizard-p5')">Next Page (Tender Process) →</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="view-wizard-p5" class="app-view">
+        <div class="wizard-progress">
+            <span class="wizard-step">1. Metadata</span>
+            <span class="wizard-step">2. Logs &amp; Decisions</span>
+            <span class="wizard-step">3. Layouts &amp; Drawings</span>
+            <span class="wizard-step">4. Budget Approval</span>
+            <span class="wizard-step current">5. Tender Process</span>
+            <span class="wizard-step">6. Work Execution</span>
+        </div>
+        <div class="box">
+            <div class="box-title">Step 5: Tender Process &amp; Procurement Records</div>
+            <label>Log Entry Date</label>
+            <input type="date" id="p5-date">
+            <label>Tender ID</label>
+            <input type="text" id="p5-tenderId" placeholder="e.g., IUT/TND-2026-A">
+            <label>Datewise Tender Info with APP Info</label>
+            <textarea id="p5-appInfo" placeholder="Annual Procurement Plan line-item connection context..."></textarea>
+            
+            <div style="display:grid; grid-template-columns: 1fr 1fr 1fr; gap:10px;">
+                <div>
+                    <label>Approved Date</label>
+                    <input type="date" id="p5-appDate">
+                </div>
+                <div>
+                    <label>Winning Bidder Name</label>
+                    <input type="text" id="p5-bidder" placeholder="Vendor / Contractor Name">
+                </div>
+                <div>
+                    <label>Value</label>
+                    <input type="number" id="p5-value" placeholder="Contract Worth">
+                </div>
+            </div>
+
+            <div class="link-container-wrapper gdrive-input-box-area">
+                <label style="color:var(--accent-light);">Attach Tendering Notices / Contractor Bid Forms</label>
+                <div id="p5-links-list"></div>
+                <button class="btn btn-sm" type="button" onclick="addNewDriveLinkInputRow('p5-links-list')">＋ Attach Drive Link</button>
+            </div>
+
+            <button class="btn btn-success" onclick="commitP5Log()">Commit Tender Log Row</button>
+            <div id="p5-running-table-container" style="margin-top:20px; overflow-x:auto;"></div>
+
+            <div class="btn-footer-nav">
+                <button class="btn btn-secondary" onclick="switchView('view-wizard-p4')">← Previous</button>
+                <button class="btn" onclick="switchView('view-wizard-p6')">Next Page (Work Execution) →</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="view-wizard-p6" class="app-view">
+        <div class="wizard-progress">
+            <span class="wizard-step">1. Metadata</span>
+            <span class="wizard-step">2. Logs &amp; Decisions</span>
+            <span class="wizard-step">3. Layouts &amp; Drawings</span>
+            <span class="wizard-step">4. Budget Approval</span>
+            <span class="wizard-step">5. Tender Process</span>
+            <span class="wizard-step current">6. Work Execution</span>
+        </div>
+        <div class="box" style="border-top: 5px solid var(--execution);">
+            <div class="box-title" style="color: var(--execution);">Step 6: Work Execution Phase</div>
+            <label>Execution Log Date</label>
+            <input type="date" id="p6-date">
+            
+            <label>Work Component / Task Description</label>
+            <input type="text" id="p6-component" placeholder="e.g., Piling Work, Superstructure Framing, Concreting">
+            
+            <label>Site Progress Status &amp; Achievements</label>
+            <textarea id="p6-progress" placeholder="Describe physical or structural targets completed on site..."></textarea>
+
+            <div style="display:grid; grid-template-columns: 1fr 1fr; gap:15px;">
+                <div>
+                    <label>Physical Progress (%)</label>
+                    <input type="number" id="p6-percent" min="0" max="100" placeholder="e.g., 45">
+                </div>
+                <div>
+                    <label>Supervising Engineer Remarks</label>
+                    <input type="text" id="p6-remarks" placeholder="Quality checks, site engineer updates">
+                </div>
+            </div>
+
+            <div class="link-container-wrapper gdrive-input-box-area">
+                <label style="color:var(--execution);">Attach Execution Field Reports / Site Quality Photos (Google Drive)</label>
+                <div id="p6-links-list"></div>
+                <button class="btn btn-sm btn-execution" type="button" onclick="addNewDriveLinkInputRow('p6-links-list')">＋ Attach Drive Link</button>
+            </div>
+
+            <button class="btn btn-execution" onclick="commitP6Log()">Commit Execution Log Row</button>
+            <div id="p6-running-table-container" style="margin-top:20px; overflow-x:auto;"></div>
+
+            <div class="btn-footer-nav">
+                <button class="btn btn-secondary" onclick="switchView('view-wizard-p5')">← Previous Page</button>
+                <button class="btn" onclick="navigateToHome()">Finish &amp; Save Master Dossier ✓</button>
+            </div>
+        </div>
+    </div>
+
 </div>
 
 <script>
-    document.getElementById('loginForm').addEventListener('submit', function(e) {
-        e.preventDefault();
-        if (document.getElementById('username').value.trim() === 'Minhaj' && document.getElementById('password').value.trim() === '102333') {
-            sessionStorage.setItem('zccd_auth_session', 'authenticated');
-            initDashboardPipeline();
-        } else {
-            document.getElementById('loginError').style.display = 'block';
-        }
-    });
-
-    function handleLogout() {
-        sessionStorage.removeItem('zccd_auth_session');
-        window.location.reload();
-    }
-
-    let dataset = JSON.parse(localStorage.getItem('zccd_workflow_db')) || [];
-    let customRegistries = JSON.parse(localStorage.getItem('zccd_registries')) || {
-        architects: [],
-        structuralDesigners: [],
-        locations: [],
-        winningBidders: []
-    };
-
-    const officers = ['SDE', 'AE 1', 'AE 2', 'SAE-1', 'SAE-2', 'SAE-3'];
-    let assignedChartObj = null;
-    let completionChartObj = null;
-    let bidderSortAscending = true;
-
-    const blueprint = {
-        "Design": [
-            { id: "design_desc", label: "Description", type: "text" },
-            { id: "architect", label: "Architect", type: "registry", registryKey: "architects" },
-            { id: "structural_designer", label: "Structural Designer", type: "registry", registryKey: "structuralDesigners" },
-            { id: "note_marked_date", label: "Note Marked Date", type: "date" },
-            { id: "followup_design_team", label: "Followup with Design Team", type: "text" },
-            { id: "design_receival_date", label: "Design Receival Date (Triggers Completion)", type: "date", critical: true }
-        ],
-        "Estimate approval": [
-            { id: "est_pkg_name", label: "Estimate Pkg Name", type: "text" },
-            { id: "work_type", label: "Work Type", type: "select", options: ["Work", "Supply", "Service", "Yearly"] },
-            { id: "est_description", label: "Description", type: "text" },
-            { id: "est_location", label: "Location", type: "registry", registryKey: "locations" },
-            { id: "prep_at_pe", label: "Preparation at PE Date", type: "date" },
-            { id: "marked_from_director", label: "Marked from Director Date", type: "date" },
-            { id: "marked_from_chief", label: "Marked from Chief Date (Optional)", type: "date" },
-            { id: "marked_date_to_pe", label: "Marked Date to PE (Triggers Completion)", type: "date", critical: true }
-        ],
-        "Tender related": [
-            { id: "tender_id", label: "Tender ID", type: "text" },
-            { id: "tender_desc", label: "Description", type: "text" },
-            { id: "tender_floated", label: "Tender Floated Date", type: "date" },
-            { id: "tender_opened", label: "Tender Opened Date", type: "date" },
-            { id: "evaluation_completed", label: "Evaluation Completed Date", type: "date" },
-            { id: "noa_given", label: "NOA Given Date", type: "date" },
-            { id: "contract_uploaded_date", label: "Contract Uploaded Date (Triggers Completion)", type: "date", critical: true },
-            { id: "winning_bidder", label: "Winning Bidder", type: "registry", registryKey: "winningBidders" },
-            { id: "wo_number", label: "W/O Number", type: "text" },
-            { id: "wo_value_bdt", label: "W/O Value in BDT", type: "number" }
-        ],
-        "Site visit": [
-            { id: "site_location", label: "Site Location", type: "text" },
-            { id: "visit_date", label: "Visit Date", type: "date" },
-            { id: "reason_visit", label: "Reason of Visit", type: "text" },
-            { id: "problem_found", label: "Problem Found", type: "text" },
-            { id: "discussed_xen", label: "Discussed with XEN", type: "select", options: ["No", "Yes"] },
-            { id: "decision_made", label: "Decision Made", type: "text" },
-            { id: "decision_implemented_date", label: "Decision Implemented Date", type: "date" },
-            { id: "problem_faced", label: "Any Problem Faced", type: "text" },
-            { id: "rediscussed_xen", label: "Rediscussed with XEN", type: "select", options: ["No", "Yes"] },
-            { id: "completion_date_new", label: "Completion Date After New Decision (Triggers Completion)", type: "date", critical: true }
-        ],
-        "Follow up": [
-            { id: "file_name_ref", label: "File Reference/Name", type: "text" },
-            { id: "visit_date", label: "Follow-up Date", type: "date" },
-            { id: "reason_visit", label: "Reason of Follow up", type: "text" },
-            { id: "problem_found", label: "Bottleneck / Problem Found", type: "text" },
-            { id: "discussed_xen", label: "Discussed with XEN", type: "select", options: ["No", "Yes"] },
-            { id: "decision_made", label: "Action Plan/Decision Made", type: "text" },
-            { id: "decision_implemented_date", label: "Action Implemented Date", type: "date" },
-            { id: "problem_faced", label: "Secondary Problems Faced", type: "text" },
-            { id: "rediscussed_xen", label: "Rediscussed with XEN", type: "select", options: ["No", "Yes"] },
-            { id: "completion_date_new", label: "Completion Date (Triggers Completion)", type: "date", critical: true }
-        ],
-        "App approval": [
-            { id: "app_fy", label: "APP FY", type: "text" },
-            { id: "revised_no", label: "Revised No", type: "select", options: ["1st", "2nd", "3rd", "4th", "5th", "6th"] },
-            { id: "app_prep_pe", label: "APP Preparation in PE Date", type: "date" },
-            { id: "app_marked_director", label: "APP Marked by Director Date", type: "date" },
-            { id: "app_marked_chief", label: "Marked by Chief Date", type: "date" },
-            { id: "app_marked_member", label: "Marked by Member Date", type: "date" },
-            { id: "uploaded_egp", label: "Uploaded in e-GP Date", type: "date" },
-            { id: "approved_egp", label: "Approved in e-GP Date (Triggers Completion)", type: "date", critical: true }
-        ],
-        "Budget approval": [
-            { id: "budget_fy", label: "Budget FY", type: "text" },
-            { id: "budget_note_prep", label: "Budget Note Preparation Date", type: "date" },
-            { id: "appr_director", label: "Approved by Director Date", type: "date" },
-            { id: "appr_chief", label: "Approved by Chief Date", type: "date" },
-            { id: "appr_controller", label: "Approved by Controller Date", type: "date" },
-            { id: "budget_meeting_faced", label: "Budget Meeting Faced Date", type: "date" },
-            { id: "budget_doc_received", label: "Budget Approval Doc Received (Triggers Completion)", type: "date", critical: true }
-        ],
-        "Reports": [
-            { id: "report_description", label: "Report Description", type: "text" },
-            { id: "report_prepared", label: "Reports Prepared Date", type: "date" },
-            { id: "report_signed", label: "Signed Date", type: "date" },
-            { id: "report_marked", label: "Marked Date", type: "date" },
-            { id: "report_stored", label: "Stored Date (Triggers Completion)", type: "date", critical: true }
-        ]
-    };
-
-    function filterAssignees() {
-        const assigner = document.getElementById('assigner').value;
-        const targetMenu = document.getElementById('assignee');
-        targetMenu.innerHTML = '';
-        let selectionArray = (assigner === 'XEN') ? ['SDE', 'AE 1', 'AE 2', 'SAE-1', 'SAE-2', 'SAE-3'] : ['SAE-1', 'SAE-2', 'SAE-3'];
-        selectionArray.forEach(rank => {
-            let op = document.createElement('option'); op.value = rank; op.textContent = rank;
-            targetMenu.appendChild(op);
-        });
-    }
-
-    function renderSubtaskFormInputs() {
-        const selectedCat = document.getElementById('taskCategory').value;
-        const container = document.getElementById('dynamicSubtaskFields');
-        container.innerHTML = '';
-
-        blueprint[selectedCat].forEach(field => {
-            let wrap = document.createElement('div');
-            wrap.className = 'form-group';
-            let labelEl = document.createElement('label');
-            labelEl.textContent = field.label;
-            wrap.appendChild(labelEl);
-
-            if (field.type === 'select') {
-                let sel = document.createElement('select'); sel.id = `sub_${field.id}`;
-                field.options.forEach(o => {
-                    let opt = document.createElement('option'); opt.value = o; opt.textContent = o; sel.appendChild(opt);
-                });
-                wrap.appendChild(sel);
-            } else if (field.type === 'registry') {
-                let groupDiv = document.createElement('div');
-                groupDiv.className = 'registry-input-group';
-                let inp = document.createElement('input');
-                inp.type = 'text'; inp.id = `sub_${field.id}`;
-                inp.placeholder = `Type new or choose...`;
-                let sel = document.createElement('select');
-                sel.id = `registry_sel_${field.id}`;
-                sel.onchange = function() { if(this.value) inp.value = this.value; };
-                refreshRegistryDropdownDOM(field.registryKey, sel);
-                groupDiv.appendChild(inp); groupDiv.appendChild(sel); wrap.appendChild(groupDiv);
-            } else {
-                let inp = document.createElement('input');
-                inp.type = field.type === 'number' ? 'number' : field.type; 
-                inp.id = `sub_${field.id}`;
-                wrap.appendChild(inp);
-            }
-            container.appendChild(wrap);
-        });
-    }
-
-    function refreshRegistryDropdownDOM(key, selectElement) {
-        selectElement.innerHTML = '<option value="">-- Saved List (Null) --</option>';
-        customRegistries[key].forEach(val => {
-            let opt = document.createElement('option'); opt.value = val; opt.textContent = val;
-            selectElement.appendChild(opt);
-        });
-    }
-
-    document.getElementById('workflowForm').addEventListener('submit', function(e) {
-        e.preventDefault();
-        const category = document.getElementById('taskCategory').value;
-        const globalDeadline = document.getElementById('deadline').value;
-        let subtaskPayload = {};
-        let triggeredCompletionDate = null;
-
-        blueprint[category].forEach(field => {
-            let domVal = document.getElementById(`sub_${field.id}`).value.trim();
-            if(field.type === 'number') domVal = domVal ? parseFloat(domVal) : 0;
-            subtaskPayload[field.id] = domVal;
-            
-            if (field.type === 'registry' && domVal) {
-                if (!customRegistries[field.registryKey].includes(domVal)) {
-                    customRegistries[field.registryKey].push(domVal);
-                }
-            }
-            if (field.critical && domVal) triggeredCompletionDate = domVal;
-        });
-
-        localStorage.setItem('zccd_registries', JSON.stringify(customRegistries));
-
-        dataset.push({
-            id: Date.now(),
-            assigner: document.getElementById('assigner').value,
-            assignee: document.getElementById('assignee').value,
-            category: category,
-            deadline: globalDeadline,
-            subtasks: subtaskPayload,
-            status: triggeredCompletionDate ? (triggeredCompletionDate <= globalDeadline ? 'Completed-On-Time' : 'Completed-Overdue') : 'Pending',
-            completionDate: triggeredCompletionDate
-        });
-
-        executeSystemRefresh();
-        this.reset();
-        renderSubtaskFormInputs();
-    });
-
-    function updateSubtaskValue(taskId, fieldId, element) {
-        const targetTask = dataset.find(t => t.id === taskId);
-        if (targetTask) {
-            let newVal = element.value.trim();
-            const fieldBlueprint = blueprint[targetTask.category].find(f => f.id === fieldId);
-            if(fieldBlueprint && fieldBlueprint.type === 'number') newVal = newVal ? parseFloat(newVal) : 0;
-            
-            targetTask.subtasks[fieldId] = newVal;
-            
-            if (fieldBlueprint && fieldBlueprint.type === 'registry' && newVal) {
-                if (!customRegistries[fieldBlueprint.registryKey].includes(newVal)) {
-                    customRegistries[fieldBlueprint.registryKey].push(newVal);
-                    localStorage.setItem('zccd_registries', JSON.stringify(customRegistries));
-                }
-            }
-            
-            const criticalField = blueprint[targetTask.category].find(f => f.critical);
-            if (criticalField && targetTask.subtasks[criticalField.id]) {
-                targetTask.completionDate = targetTask.subtasks[criticalField.id];
-                targetTask.status = (targetTask.completionDate <= targetTask.deadline) ? 'Completed-On-Time' : 'Completed-Overdue';
-            } else {
-                targetTask.completionDate = null; targetTask.status = 'Pending';
-            }
-            localStorage.setItem('zccd_workflow_db', JSON.stringify(dataset));
-            renderMetricsTable();
-            renderChartsEngine();
-            renderBidderDatabaseTable();
-        }
-    }
-
-    function removeTask(id) { dataset = dataset.filter(t => t.id !== id); executeSystemRefresh(); }
-
-    function executeSystemRefresh() {
-        localStorage.setItem('zccd_workflow_db', JSON.stringify(dataset));
-        renderMetricsTable();
-        renderLedgerCards();
-        renderChartsEngine();
-        renderBidderDatabaseTable();
-    }
-
-    function renderMetricsTable() {
-        const tbody = document.getElementById('metricsBody');
-        tbody.innerHTML = '';
-        officers.forEach(rank => {
-            const assigned = dataset.filter(t => t.assignee === rank).length;
-            const completed = dataset.filter(t => t.assignee === rank && t.status === 'Completed-On-Time').length;
-            tbody.innerHTML += `<tr><td><strong>${rank}</strong></td><td><span class="badge bg-tag">${assigned}</span></td><td><span class="badge bg-success">${completed}</span></td></tr>`;
-        });
-    }
-
-    function calculateDayGaps(dateStr1, dateStr2) {
-        const diffTime = new Date(dateStr1) - new Date(dateStr2);
-        return Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-    }
-
-    function renderLedgerCards() {
-        const container = document.getElementById('ledgerContainer');
-        container.innerHTML = '';
-        if(dataset.length === 0) {
-            container.innerHTML = '<p style="color:#a0aec0; text-align:center; padding:20px;">No operational pipeline data available.</p>';
-            return;
-        }
-
-        [...dataset].reverse().forEach(task => {
-            const today = new Date().toISOString().split('T')[0];
-            const isOverdue = (today > task.deadline) && task.status === 'Pending';
-            let currentBadge = `<span class="badge bg-warn">In Progress</span>`;
-            let timelineDiagnosticHTML = '';
-            
-            if (task.status === 'Completed-On-Time') {
-                const gap = calculateDayGaps(task.deadline, task.completionDate);
-                currentBadge = `<span class="badge bg-success">On-Time Closed ✓</span>`;
-                timelineDiagnosticHTML = `<span class="badge bg-success" style="margin-left:8px;">${gap} Days Ahead</span>`;
-            } else if (task.status === 'Completed-Overdue') {
-                const gap = calculateDayGaps(task.completionDate, task.deadline);
-                currentBadge = `<span class="badge bg-danger">Overdue Closed</span>`;
-                timelineDiagnosticHTML = `<span class="badge bg-danger" style="margin-left:8px;">Late by ${gap} Days</span>`;
-            } else if (isOverdue) {
-                const gap = calculateDayGaps(today, task.deadline);
-                currentBadge = `<span class="badge bg-danger">Overdue Pending</span>`;
-                timelineDiagnosticHTML = `<span class="badge bg-danger" style="margin-left:8px;">${gap} Days Overdue</span>`;
-            }
-
-            let card = document.createElement('div');
-            card.className = `task-item ${task.status.includes('Completed') ? 'completed' : ''} ${isOverdue ? 'overdue' : ''}`;
-            
-            let fieldsHTML = '';
-            blueprint[task.category].forEach(f => {
-                const val = task.subtasks[f.id] || '';
-                if(f.type === 'select') {
-                    let options = f.options.map(opt => `<option value="${opt}" ${val === opt ? 'selected' : ''}>${opt}</option>`).join('');
-                    fieldsHTML += `<div class="subtask-field"><span>${f.label}</span><select onchange="updateSubtaskValue(${task.id}, '${f.id}', this)">${options}</select></div>`;
-                } else {
-                    fieldsHTML += `<div class="subtask-field"><span>${f.label}</span><input type="${f.type === 'date' ? 'date' : 'text'}" value="${val}" onchange="updateSubtaskValue(${task.id}, '${f.id}', this)"></div>`;
-                }
+    let database = [];
+    try {
+        const rawLocalData = localStorage.getItem('wizard_diary_data_v4_execution');
+        if(rawLocalData) {
+            database = JSON.parse(rawLocalData);
+            database.forEach(p => {
+                if(!p.metaLinks) p.metaLinks = [];
+                if(!p.plans) p.plans = [];
+                if(!p.decisions) p.decisions = [];
+                if(!p.problems) p.problems = [];
+                if(!p.layouts) p.layouts = [];
+                if(!p.budgets) p.budgets = [];
+                if(!p.tenders) p.tenders = [];
+                if(!p.executions) p.executions = [];
             });
+        }
+    } catch(err) {
+        console.error("Local storage error parsed, resetting clean.", err);
+        database = [];
+    }
 
-            let taskHeaderSubtitle = '';
-            if(task.category === "Estimate approval" && task.subtasks.est_pkg_name) {
-                taskHeaderSubtitle = ` — <span style="color:var(--accent); font-weight:bold;">${task.subtasks.est_pkg_name}</span>`;
+    let currentWorkingProjId = null; 
+    let isEditingExistingMode = false;
+
+    window.onload = function() {
+        // Hydrate theme configuration state
+        const savedTheme = localStorage.getItem('diary_theme');
+        if(savedTheme === 'dark') {
+            document.body.classList.add('dark-theme');
+            document.getElementById('theme-toggle-btn').innerText = '☀️ Light Mode';
+        }
+        renderMasterDatabase();
+    };
+
+    function toggleTheme() {
+        document.body.classList.toggle('dark-theme');
+        const isDark = document.body.classList.contains('dark-theme');
+        localStorage.setItem('diary_theme', isDark ? 'dark' : 'light');
+        document.getElementById('theme-toggle-btn').innerText = isDark ? '☀️ Light Mode' : '🌙 Dark Mode';
+    }
+
+    function addNewDriveLinkInputRow(containerId, initialValue = "", initialLabel = "") {
+        const container = document.getElementById(containerId);
+        if(!container) return;
+        const div = document.createElement('div');
+        div.className = 'gdrive-input-row';
+        div.style.display = 'flex';
+        div.style.gap = '10px';
+        div.style.marginBottom = '8px';
+        div.innerHTML = `
+            <input type="text" class="gdrive-label-field" placeholder="Label Description" value="${initialLabel}" style="width:35%; margin:0; padding:8px; border-width:1px;">
+            <input type="url" class="gdrive-url-field" placeholder="https://drive.google.com/..." value="${initialValue}" style="width:55%; margin:0; padding:8px; border-width:1px;">
+            <button class="btn btn-danger btn-sm" type="button" onclick="this.parentElement.remove()" style="width:10%; padding:0; height:38px;">&times;</button>
+        `;
+        container.appendChild(div);
+    }
+
+    function collectDriveLinksFromContainer(containerId) {
+        const container = document.getElementById(containerId);
+        if(!container) return [];
+        const rows = container.querySelectorAll('.gdrive-input-row');
+        let extractedLinks = [];
+        rows.forEach(row => {
+            const label = row.querySelector('.gdrive-label-field').value.trim();
+            const url = row.querySelector('.gdrive-url-field').value.trim();
+            if(url) {
+                extractedLinks.push({ name: label || "Linked Document", link: url });
             }
-
-            card.innerHTML = `
-                <div style="display:flex; justify-content:space-between; align-items:center;">
-                    <div><span class="badge bg-tag">${task.category}</span> ${taskHeaderSubtitle} <span style="font-size:12px; margin-left:10px; color:#718096;">From: <strong>${task.assigner}</strong> ➔ Target: <strong>${task.assignee}</strong></span></div>
-                    <div>${currentBadge} ${timelineDiagnosticHTML}</div>
-                </div>
-                <div style="margin-top:6px; font-size:12px; color: var(--text);">Target Deadline Boundary: <strong>${task.deadline}</strong></div>
-                <div class="subtask-grid">${fieldsHTML}</div>
-                <div style="margin-top:10px; text-align:right;"><button class="badge bg-danger" style="width:auto; padding:4px 10px;" onclick="removeTask(${task.id})">Purge Record</button></div>
-            `;
-            container.appendChild(card);
         });
+        return extractedLinks;
     }
 
-    function renderChartsEngine() {
-        const today = new Date().toISOString().split('T')[0];
-        const assignedData = officers.map(o => dataset.filter(t => t.assignee === o).length);
-        const completionPerformanceData = officers.map(o => {
-            const officerTasks = dataset.filter(t => t.assignee === o);
-            const onTimeDone = officerTasks.filter(t => t.status === 'Completed-On-Time').length;
-            const absoluteDeficit = officerTasks.filter(t => t.status === 'Completed-Overdue' || t.status === 'Pending' || (today > t.deadline)).length;
-            return onTimeDone > 0 || absoluteDeficit > 0 ? (onTimeDone - absoluteDeficit) : 0;
-        });
-
-        const ctxAssigned = document.getElementById('assignedBarChart').getContext('2d');
-        if (assignedChartObj) assignedChartObj.destroy();
-        assignedChartObj = new Chart(ctxAssigned, {
-            type: 'bar',
-            data: { labels: officers, datasets: [{ label: 'Total Tasks Assigned', data: assignedData, backgroundColor: '#2b6cb0', borderWidth: 1 }] },
-            options: { responsive: true, maintainAspectRatio: false, scales: { y: { beginAtZero: true, ticks: { stepSize: 1 } } } }
-        });
-
-        const ctxCompletion = document.getElementById('completionBarChart').getContext('2d');
-        if (completionChartObj) completionChartObj.destroy();
-        completionChartObj = new Chart(ctxCompletion, {
-            type: 'bar',
-            data: { labels: officers, datasets: [{ label: 'Net On-Time Performance Index (+ / -)', data: completionPerformanceData, backgroundColor: completionPerformanceData.map(v => v >= 0 ? '#38a169' : '#e53e3e'), borderWidth: 1 }] },
-            options: { responsive: true, maintainAspectRatio: false, scales: { y: { beginAtZero: true, ticks: { stepSize: 1 } } } }
-        });
+    function buildGDriveHtmlBadges(linksArray) {
+        if(!linksArray || linksArray.length === 0) return "";
+        return "<div style='margin-top:4px;'>" + linksArray.map(l => `
+            <a href="${l.link}" target="_blank" class="gdrive-link-badge">📂 ${l.name}</a>
+        `).join(' ') + "</div>";
     }
 
-    function toggleBidderSort() { bidderSortAscending = !bidderSortAscending; renderBidderDatabaseTable(); }
-
-    function renderBidderDatabaseTable() {
-        const tbody = document.getElementById('bidderDatabaseBody');
-        tbody.innerHTML = '';
-        let bidderSummaryMap = {};
+    function switchView(viewId) {
+        document.querySelectorAll('.app-view').forEach(v => v.classList.remove('active'));
+        const targetView = document.getElementById(viewId);
+        if(targetView) targetView.classList.add('active');
+        window.scrollTo(0,0);
         
-        dataset.filter(t => t.category === "Tender related").forEach(task => {
-            const name = task.subtasks.winning_bidder ? task.subtasks.winning_bidder.trim() : '';
-            const valueBDT = task.subtasks.wo_value_bdt ? parseFloat(task.subtasks.wo_value_bdt) : 0;
-            const woNum = task.subtasks.wo_number ? task.subtasks.wo_number.trim() : '';
-            
-            if (name) {
-                if (!bidderSummaryMap[name]) {
-                    bidderSummaryMap[name] = { worksCount: 0, totalValue: 0, woNumbers: [] };
-                }
-                bidderSummaryMap[name].worksCount += 1;
-                bidderSummaryMap[name].totalValue += valueBDT;
-                if (woNum && !bidderSummaryMap[name].woNumbers.includes(woNum)) {
-                    bidderSummaryMap[name].woNumbers.push(woNum);
-                }
+        if(viewId === 'view-wizard-p2') renderSubTablesPage2();
+        if(viewId === 'view-wizard-p3') renderSubTablesPage3();
+        if(viewId === 'view-wizard-p4') renderSubTablesPage4();
+        if(viewId === 'view-wizard-p5') renderSubTablesPage5();
+        if(viewId === 'view-wizard-p6') renderSubTablesPage6();
+    }
+
+    function navigateToHome() {
+        currentWorkingProjId = null;
+        isEditingExistingMode = false;
+        renderMasterDatabase();
+        switchView('view-home');
+    }
+
+    function startNewProjectWizard() {
+        currentWorkingProjId = null;
+        isEditingExistingMode = false;
+        
+        document.getElementById('w-projId').disabled = false;
+        document.getElementById('w-projId').value = "";
+        document.getElementById('w-projFy').value = "";
+        document.getElementById('w-projName').value = "";
+        document.getElementById('w-projDetails').value = "";
+        
+        const p1Links = document.getElementById('p1-links-list');
+        if(p1Links) p1Links.innerHTML = "";
+        
+        clearPageFormFields();
+        switchView('view-wizard-p1');
+    }
+
+    function saveP1AndNext() {
+        const id = document.getElementById('w-projId').value.trim();
+        const fy = document.getElementById('w-projFy').value.trim();
+        const name = document.getElementById('w-projName').value.trim();
+        const details = document.getElementById('w-projDetails').value.trim();
+        const links = collectDriveLinksFromContainer('p1-links-list');
+
+        if(!id || !fy || !name) return alert("Error: Fields marked with * are required.");
+
+        if(!isEditingExistingMode) {
+            if(database.some(p => p.id.toLowerCase() === id.toLowerCase())) {
+                return alert("Primary Key Conflict: This Project ID already exists.");
             }
+            let targetObj = { id, fy, name, details, metaLinks: links, plans:[], decisions:[], problems:[], layouts:[], budgets:[], tenders:[], executions:[] };
+            database.push(targetObj);
+            currentWorkingProjId = id;
+            isEditingExistingMode = true; 
+        } else {
+            let idx = database.findIndex(p => p.id === currentWorkingProjId);
+            if(idx !== -1) {
+                database[idx].fy = fy;
+                database[idx].name = name;
+                database[idx].details = details;
+                database[idx].metaLinks = links;
+            }
+        }
+        syncMemory();
+        switchView('view-wizard-p2');
+    }
+
+    function getCurrentProjectRef() {
+        return database.find(p => p.id === currentWorkingProjId);
+    }
+
+    function commitP2Log() {
+        const p = getCurrentProjectRef();
+        const d = document.getElementById('p2-date').value;
+        if(!d) return alert("Select an entry log target date.");
+
+        const links = collectDriveLinksFromContainer('p2-links-list');
+        const planText = document.getElementById('p2-plan').value;
+        const decText = document.getElementById('p2-decision').value;
+        const workText = document.getElementById('p2-work').value;
+        const probText = document.getElementById('p2-problem').value;
+        const discText = document.getElementById('p2-solDisc').value;
+        const implText = document.getElementById('p2-solImpl').value;
+
+        if(planText) p.plans.push({ id: 'L-'+Date.now()+'a', date: d, text: planText, attachments: links });
+        if(decText || workText) p.decisions.push({ id: 'L-'+Date.now()+'b', date: d, decision: decText, work: workText, attachments: links });
+        if(probText || discText || implText) p.problems.push({ id: 'L-'+Date.now()+'c', date: d, problem: probText, discussed: discText, implemented: implText, attachments: links });
+
+        syncMemory();
+        clearPageFormFields();
+        document.getElementById('p2-links-list').innerHTML = "";
+        renderSubTablesPage2();
+    }
+
+    function commitP3Log() {
+        const p = getCurrentProjectRef();
+        const d = document.getElementById('p3-date').value;
+        if(!d) return alert("Select an entry log target date.");
+
+        p.layouts.push({
+            id: 'L-'+Date.now(), date: d,
+            draft: document.getElementById('p3-draft').value,
+            note: document.getElementById('p3-note').value,
+            attachments: collectDriveLinksFromContainer('p3-links-list')
         });
 
-        let summarizedArray = Object.keys(bidderSummaryMap).map(name => {
-            return {
-                name: name,
-                worksCount: bidderSummaryMap[name].worksCount,
-                totalValue: bidderSummaryMap[name].totalValue,
-                woNumbers: bidderSummaryMap[name].woNumbers
-            };
+        syncMemory();
+        clearPageFormFields();
+        document.getElementById('p3-links-list').innerHTML = "";
+        renderSubTablesPage3();
+    }
+
+    function commitP4Log() {
+        const p = getCurrentProjectRef();
+        const d = document.getElementById('p4-date').value;
+        if(!d) return alert("Select an entry log target date.");
+
+        p.budgets.push({
+            id: 'L-'+Date.now(), date: d,
+            type: document.getElementById('p4-type').value,
+            decision: document.getElementById('p4-decision').value,
+            recDate: document.getElementById('p4-recDate').value,
+            amount: document.getElementById('p4-amount').value,
+            attachments: collectDriveLinksFromContainer('p4-links-list')
         });
 
-        summarizedArray.sort((a, b) => bidderSortAscending ? a.name.localeCompare(b.name) : b.name.localeCompare(a.name));
+        syncMemory();
+        clearPageFormFields();
+        document.getElementById('p4-links-list').innerHTML = "";
+        renderSubTablesPage4();
+    }
 
-        if (summarizedArray.length === 0) {
-            tbody.innerHTML = '<tr><td colspan="4" style="color:#a0aec0; padding:15px;">No tender records available inside database.</td></tr>';
+    function commitP5Log() {
+        const p = getCurrentProjectRef();
+        const d = document.getElementById('p5-date').value;
+        if(!d) return alert("Select an entry log target date.");
+
+        p.tenders.push({
+            id: 'L-'+Date.now(), date: d,
+            tenderId: document.getElementById('p5-tenderId').value,
+            appInfo: document.getElementById('p5-appInfo').value,
+            appDate: document.getElementById('p5-appDate').value,
+            bidder: document.getElementById('p5-bidder').value,
+            value: document.getElementById('p5-value').value,
+            attachments: collectDriveLinksFromContainer('p5-links-list')
+        });
+
+        syncMemory();
+        clearPageFormFields();
+        document.getElementById('p5-links-list').innerHTML = "";
+        renderSubTablesPage5();
+    }
+
+    function commitP6Log() {
+        const p = getCurrentProjectRef();
+        const d = document.getElementById('p6-date').value;
+        if(!d) return alert("Select a work execution entry date.");
+
+        p.executions.push({
+            id: 'L-'+Date.now(), date: d,
+            component: document.getElementById('p6-component').value.trim(),
+            progress: document.getElementById('p6-progress').value.trim(),
+            percent: document.getElementById('p6-percent').value.trim(),
+            remarks: document.getElementById('p6-remarks').value.trim(),
+            attachments: collectDriveLinksFromContainer('p6-links-list')
+        });
+
+        syncMemory();
+        clearPageFormFields();
+        document.getElementById('p6-links-list').innerHTML = "";
+        renderSubTablesPage6();
+    }
+
+    function renderSubTablesPage2() {
+        const p = getCurrentProjectRef();
+        let html = `<h4>Current Operational Logs:</h4>`;
+        html += `<table class="db-table"><tr><th>Type</th><th>Date</th><th>Logged Value</th><th>Action</th></tr>`;
+        p.plans.forEach(r => html += `<tr><td>Plan</td><td>${r.date}</td><td>${r.text} ${buildGDriveHtmlBadges(r.attachments)}</td><td><button class="btn btn-sm btn-danger" onclick="removeSubRow('plans','${r.id}','view-wizard-p2')">&times;</button></td></tr>`);
+        p.decisions.forEach(r => html += `<tr><td>Decision</td><td>${r.date}</td><td><strong>Decision:</strong> ${r.decision}<br><strong>Work:</strong> ${r.work} ${buildGDriveHtmlBadges(r.attachments)}</td><td><button class="btn btn-sm btn-danger" onclick="removeSubRow('decisions','${r.id}','view-wizard-p2')">&times;</button></td></tr>`);
+        p.problems.forEach(r => html += `<tr><td>Problem</td><td>${r.date}</td><td><strong>Problem:</strong> ${r.problem}<br><strong>Solutions:</strong> ${r.discussed || r.implemented} ${buildGDriveHtmlBadges(r.attachments)}</td><td><button class="btn btn-sm btn-danger" onclick="removeSubRow('problems','${r.id}','view-wizard-p2')">&times;</button></td></tr>`);
+        html += `</table>`;
+        const container = document.getElementById('p2-running-table-container');
+        if(container) container.innerHTML = (p.plans.length + p.decisions.length + p.problems.length === 0) ? "" : html;
+    }
+
+    function renderSubTablesPage3() {
+        const p = getCurrentProjectRef();
+        let html = `<table class="db-table"><tr><th>Date</th><th>Draft Layout</th><th>Note sent</th><th>Action</th></tr>`;
+        p.layouts.forEach(r => html += `<tr><td>${r.date}</td><td>${r.draft} ${buildGDriveHtmlBadges(r.attachments)}</td><td>${r.note}</td><td><button class="btn btn-sm btn-danger" onclick="removeSubRow('layouts','${r.id}','view-wizard-p3')">&times;</button></td></tr>`);
+        html += `</table>`;
+        const container = document.getElementById('p3-running-table-container');
+        if(container) container.innerHTML = p.layouts.length === 0 ? "" : html;
+    }
+
+    function renderSubTablesPage4() {
+        const p = getCurrentProjectRef();
+        let html = `<table class="db-table"><tr><th>Date</th><th>Type</th><th>Decision</th><th>Received Date</th><th>Amount</th><th>Action</th></tr>`;
+        p.budgets.forEach(r => html += `<tr><td>${r.date}</td><td>${r.type}</td><td>${r.decision} ${buildGDriveHtmlBadges(r.attachments)}</td><td>${r.recDate}</td><td>${Number(r.amount).toLocaleString()}</td><td><button class="btn btn-sm btn-danger" onclick="removeSubRow('budgets','${r.id}','view-wizard-p4')">&times;</button></td></tr>`);
+        html += `</table>`;
+        const container = document.getElementById('p4-running-table-container');
+        if(container) container.innerHTML = p.budgets.length === 0 ? "" : html;
+    }
+
+    function renderSubTablesPage5() {
+        const p = getCurrentProjectRef();
+        let html = `<table class="db-table"><tr><th>Date</th><th>Tender ID</th><th>Info / APP</th><th>Approved Date</th><th>Winner / Bidder</th><th>Value</th><th>Action</th></tr>`;
+        p.tenders.forEach(r => html += `<tr><td>${r.date}</td><td><code>${r.tenderId}</code></td><td>${r.appInfo} ${buildGDriveHtmlBadges(r.attachments)}</td><td>${r.appDate || 'N/A'}</td><td><strong>${r.bidder || 'N/A'}</strong></td><td>${Number(r.value).toLocaleString()}</td><td><button class="btn btn-sm btn-danger" onclick="removeSubRow('tenders','${r.id}','view-wizard-p5')">&times;</button></td></tr>`);
+        html += `</table>`;
+        const container = document.getElementById('p5-running-table-container');
+        if(container) container.innerHTML = p.tenders.length === 0 ? "" : html;
+    }
+
+    function renderSubTablesPage6() {
+        const p = getCurrentProjectRef();
+        let html = `<table class="db-table"><tr><th>Date</th><th>Component</th><th>Progress Achievements</th><th>% Complete</th><th>Remarks</th><th>Action</th></tr>`;
+        p.executions.forEach(r => html += `<tr><td>${r.date}</td><td><strong>${r.component}</strong></td><td>${r.progress} ${buildGDriveHtmlBadges(r.attachments)}</td><td><strong>${r.percent}%</strong></td><td><i>${r.remarks || 'None'}</i></td><td><button class="btn btn-sm btn-danger" onclick="removeSubRow('executions','${r.id}','view-wizard-p6')">&times;</button></td></tr>`);
+        html += `</table>`;
+        const container = document.getElementById('p6-running-table-container');
+        if(container) container.innerHTML = p.executions.length === 0 ? "" : html;
+    }
+
+    function removeSubRow(arrayName, rowId, pageViewRefresh) {
+        if(confirm("Erase entry row context?")) {
+            const p = getCurrentProjectRef();
+            p[arrayName] = p[arrayName].filter(r => r.id !== rowId);
+            syncMemory();
+            switchView(pageViewRefresh);
+        }
+    }
+
+    function editEntireProjectRoute(id) {
+        currentWorkingProjId = id;
+        isEditingExistingMode = true;
+        const p = database.find(proj => proj.id === id);
+
+        document.getElementById('w-projId').disabled = true;
+        document.getElementById('w-projId').value = p.id;
+        document.getElementById('w-projFy').value = p.fy;
+        document.getElementById('w-projName').value = p.name;
+        document.getElementById('w-projDetails').value = p.details || '';
+
+        const listContainer = document.getElementById('p1-links-list');
+        if(listContainer) {
+            listContainer.innerHTML = "";
+            if(p.metaLinks) {
+                p.metaLinks.forEach(l => addNewDriveLinkInputRow('p1-links-list', l.link, l.name));
+            }
+        }
+
+        switchView('view-wizard-p1');
+    }
+
+    function deleteEntireProject(id) {
+        if(confirm("Completely wipe this structural dataset record from storage?")) {
+            database = database.filter(p => p.id !== id);
+            syncMemory();
+            renderMasterDatabase();
+        }
+    }
+
+    function showFullDetailsPage(id) {
+        const p = database.find(proj => proj.id === id);
+        if(!p) return;
+
+        document.getElementById('details-page-title').innerText = `Full Details Dossier: [${p.id}]`;
+        
+        let htmlContent = `
+            <div style="background: var(--bg-color); padding: 20px; border-radius: var(--radius-lg); margin-bottom: 25px; border-left:5px solid var(--accent);">
+                <p style="margin: 0 0 8px 0; font-size:1.05rem;"><strong>Financial Year (FY):</strong> ${p.fy}</p>
+                <p style="margin: 0 0 8px 0; font-size:1.05rem;"><strong>Project ID:</strong> ${p.id}</p>
+                <p style="margin: 0 0 8px 0; font-size:1.05rem;"><strong>Name of Project:</strong> ${p.name}</p>
+                <p style="margin: 0 0 12px 0; font-size:1.05rem;"><strong>Baseline Scope parameters:</strong> ${p.details || 'N/A'}</p>
+                ${p.metaLinks && p.metaLinks.length > 0 ? `<p style="margin:0;"><strong>Master Blueprints Archive:</strong> ${buildGDriveHtmlBadges(p.metaLinks)}</p>` : ''}
+            </div>
+
+            <div class="detail-section-title">1. Datewise Project Execution Plans</div>
+            ${p.plans.length === 0 ? '<p style="color:var(--text-muted); padding-left:15px;">No plan entries recorded.</p>' : `
+                <div class="table-responsive"><table class="db-table">
+                    <thead><tr><th style="width:20%">Date</th><th>Plan Summary Details</th></tr></thead>
+                    <tbody>${p.plans.map(l => `<tr><td><strong>${l.date}</strong></td><td>${l.text} ${buildGDriveHtmlBadges(l.attachments)}</td></tr>`).join('')}</tbody>
+                </table></div>
+            `}
+
+            <div class="detail-section-title">2. Datewise Important Decisions &amp; Executed Sub-tasks</div>
+            ${p.decisions.length === 0 ? '<p style="color:var(--text-muted); padding-left:15px;">No decision logs recorded.</p>' : `
+                <div class="table-responsive"><table class="db-table">
+                    <thead><tr><th style="width:20%">Date</th><th>Important Decisions Reached</th><th>Executed Work Context</th></tr></thead>
+                    <tbody>${p.decisions.map(l => `<tr><td><strong>${l.date}</strong></td><td>${l.decision} ${buildGDriveHtmlBadges(l.attachments)}</td><td>${l.work || 'N/A'}</td></tr>`).join('')}</tbody>
+                </table></div>
+            `}
+
+            <div class="detail-section-title">3. Datewise Engineering Bottlenecks &amp; Solutions Deployment</div>
+            ${p.problems.length === 0 ? '<p style="color:var(--text-muted); padding-left:15px;">No impediment entries recorded.</p>' : `
+                <div class="table-responsive"><table class="db-table">
+                    <thead><tr><th style="width:20%">Date</th><th>Problems / Obstacles Faced</th><th>Solutions Discussed</th><th>Solutions Implemented</th></tr></thead>
+                    <tbody>${p.problems.map(l => `<tr><td><strong>${l.date}</strong></td><td style="color:var(--danger); font-weight:600;">${l.problem} ${buildGDriveHtmlBadges(l.attachments)}</td><td>${l.discussed || 'N/A'}</td><td style="color:var(--success); font-weight:600;">${l.implemented || 'N/A'}</td></tr>`).join('')}</tbody>
+                </table></div>
+            `}
+
+            <div class="detail-section-title">4. Layout Status Matrix &amp; Committee Tracking</div>
+            ${p.layouts.length === 0 ? '<p style="color:var(--text-muted); padding-left:15px;">No engineering design notes recorded.</p>' : `
+                <div class="table-responsive"><table class="db-table">
+                    <thead><tr><th style="width:20%">Date</th><th>Draft Layout Details</th><th>Notes Sent to Layout Committee / Design</th></tr></thead>
+                    <tbody>${p.layouts.map(l => `<tr><td><strong>${l.date}</strong></td><td>${l.draft} ${buildGDriveHtmlBadges(l.attachments)}</td><td>${l.note || 'N/A'}</td></tr>`).join('')}</tbody>
+                </table></div>
+            `}
+
+            <div class="detail-section-title">5. Budget Approval Matrix</div>
+            ${p.budgets.length === 0 ? '<p style="color:var(--text-muted); padding-left:15px;">No budget entries cataloged.</p>' : `
+                <div class="table-responsive"><table class="db-table">
+                    <thead><tr><th style="width:15%">Log Date</th><th style="width:20%">Budget Type</th><th>Datewise Decisions Log</th><th style="width:15%">Receive Date</th><th style="width:15%">Amount</th></tr></thead>
+                    <tbody>${p.budgets.map(l => `<tr><td><strong>${l.date}</strong></td><td><span style="background:#fef3c7; color:#d97706; font-weight:700; padding:3px 8px; border-radius:4px; font-size:0.8rem;">${l.type || 'N/A'}</span></td><td>${l.decision} ${buildGDriveHtmlBadges(l.attachments)}</td><td>${l.recDate || 'N/A'}</td><td style="font-weight:700; color:var(--success); text-align:right;">${l.amount ? Number(l.amount).toLocaleString() : '0'}</td></tr>`).join('')}</tbody>
+                </table></div>
+            `}
+
+            <div class="detail-section-title">6. Tender Process Ledger Records</div>
+            ${p.tenders.length === 0 ? '<p style="color:var(--text-muted); padding-left:15px;">No procurement rows detected.</p>' : `
+                <div class="table-responsive"><table class="db-table">
+                    <thead><tr><th style="width:15%">Log Date</th><th style="width:15%">Tender ID</th><th>Datewise Info &amp; APP Scope Details</th><th style="width:15%">Approved Date</th><th>Winning Bidder</th><th style="width:15%">Value</th></tr></thead>
+                    <tbody>${p.tenders.map(l => `<tr><td><strong>${l.date}</strong></td><td><code>${l.tenderId}</code></td><td>${l.appInfo} ${buildGDriveHtmlBadges(l.attachments)}</td><td>${l.appDate || 'N/A'}</td><td><strong>${l.bidder || 'N/A'}</strong></td><td style="font-weight:700; color:var(--warning); text-align:right;">${l.value ? Number(l.value).toLocaleString() : '0'}</td></tr>`).join('')}</tbody>
+                </table></div>
+            `}
+
+            <div class="detail-section-title" style="color:var(--execution); border-left-color:var(--execution);">7. Physical Work Execution Phase Ledger</div>
+            ${(!p.executions || p.executions.length === 0) ? '<p style="color:var(--text-muted); padding-left:15px;">No field construction milestones logged.</p>' : `
+                <div class="table-responsive"><table class="db-table">
+                    <thead>
+                        <tr style="background:var(--bg-color);">
+                            <th style="width:15%">Log Date</th>
+                            <th style="width:20%">Work Component</th>
+                            <th>Site Progress Status &amp; Accomplishments</th>
+                            <th style="width:15%">% Complete</th>
+                            <th style="width:20%">Engineering Remarks</th>
+                        </tr>
+                    </thead>
+                    <tbody>${p.executions.map(l => `
+                        <tr>
+                            <td><strong>${l.date}</strong></td>
+                            <td style="color:var(--execution); font-weight:700;">${l.component}</td>
+                            <td>${l.progress} ${buildGDriveHtmlBadges(l.attachments)}</td>
+                            <td><span style="background:#f3e8ff; color:#7c3aed; font-weight:800; padding:4px 10px; border-radius:20px; font-size:0.82rem;">${l.percent}%</span></td>
+                            <td><i>${l.remarks || 'N/A'}</i></td>
+                        </tr>
+                    `).join('')}</tbody>
+                </table></div>
+            `}
+        `;
+
+        document.getElementById('fullDetailsRenderContainer').innerHTML = htmlContent;
+        switchView('view-full-details');
+    }
+
+    function renderMasterDatabase() {
+        const out = document.getElementById('masterDbContainer');
+        if(!out) return;
+        out.innerHTML = "";
+
+        if(database.length === 0) {
+            out.innerHTML = `<p style="text-align:center; color:var(--text-muted); padding:20px; font-weight:bold;">No project data rows found.</p>`;
             return;
         }
 
-        summarizedArray.forEach(row => {
-            let woBadgesHTML = row.woNumbers.length > 0 
-                ? row.woNumbers.map(no => `<span class="wo-sub-badge"># ${no}</span>`).join(' ')
-                : `<span style="color:#a0aec0; font-style:italic;">None logged</span>`;
+        let grouped = {};
+        database.forEach(p => {
+            if(!grouped[p.fy]) grouped[p.fy] = [];
+            grouped[p.fy].push(p);
+        });
 
-            tbody.innerHTML += `
-                <tr>
-                    <td style="text-align:left; padding-left:15px;"><strong>${row.name}</strong></td>
-                    <td><div class="wo-tag-list">${woBadgesHTML}</div></td>
-                    <td><span class="badge bg-purple">${row.worksCount} Works Awarded</span></td>
-                    <td><strong style="color:var(--primary);">${row.totalValue.toLocaleString('en-BD')} BDT</strong></td>
-                </tr>`;
+        Object.keys(grouped).sort().reverse().forEach(fy => {
+            let section = document.createElement('div');
+            section.innerHTML = `<div class="year-header">Financial Year: ${fy}</div>`;
+
+            grouped[fy].forEach(p => {
+                let card = document.createElement('div');
+                card.className = 'project-card';
+                card.innerHTML = `
+                    <div class="project-summary">
+                        <div class="project-meta-info">
+                            <strong>FY:</strong> ${p.fy} | 
+                            <strong>ID:</strong> <code>${p.id}</code> | 
+                            <strong>Name:</strong> <span style="font-weight:700; color:var(--text-main); margin-left:4px;">${p.name}</span>
+                        </div>
+                        <div class="btn-group">
+                            <button class="btn btn-sm btn-success" onclick="showFullDetailsPage('${p.id}')">See Full Details</button>
+                            <button class="btn btn-sm" onclick="editEntireProjectRoute('${p.id}')">Edit / Add Logs</button>
+                            <button class="btn btn-sm btn-danger" onclick="deleteEntireProject('${p.id}')">Delete</button>
+                        </div>
+                    </div>
+                `;
+                section.appendChild(card);
+            });
+            out.appendChild(section);
         });
     }
 
-    function initDashboardPipeline() {
-        document.getElementById('loginOverlay').style.display = 'none';
-        document.getElementById('dashboardContent').style.display = 'block';
-        filterAssignees();
-        renderSubtaskFormInputs();
-        executeSystemRefresh();
+    function exportDataToCSV() {
+        if(database.length === 0) return alert("No data to export.");
+        let csvRows = [];
+        csvRows.push("RecordType,ProjectID,FY,ProjectName,Details,Date,Field1,Field2,Field3,Field4,Field5,Field6");
+
+        database.forEach(p => {
+            csvRows.push(`METADATA,"${p.id}","${p.fy}","${p.name.replace(/"/g, '""')}","${(p.details || '').replace(/"/g, '""')}",,,,,,,`);
+            if(p.metaLinks) p.metaLinks.forEach(l => csvRows.push(`GDRIVE_META,"${p.id}",,,,"${l.name}","${l.link}",,,,,`));
+            if(p.plans) p.plans.forEach(l => csvRows.push(`PLAN,"${p.id}",,,,"${l.date}","${l.text.replace(/"/g, '""')}",,,,,`));
+            if(p.decisions) p.decisions.forEach(l => csvRows.push(`DECISION,"${p.id}",,,,"${l.date}","${l.decision.replace(/"/g, '""')}","${l.work.replace(/"/g, '""')}",,,,`));
+            if(p.problems) p.problems.forEach(l => csvRows.push(`PROBLEM,"${p.id}",,,,"${l.date}","${l.problem.replace(/"/g, '""')}","${l.discussed.replace(/"/g, '""')}","${l.implemented.replace(/"/g, '""')}",,,`));
+            if(p.layouts) p.layouts.forEach(l => csvRows.push(`LAYOUT,"${p.id}",,,,"${l.date}","${l.draft.replace(/"/g, '""')}","${l.note.replace(/"/g, '""')}",,,,`));
+            if(p.budgets) p.budgets.forEach(l => csvRows.push(`BUDGET,"${p.id}",,,,"${l.date}","${l.type}","${l.decision.replace(/"/g, '""')}","${l.recDate}","${l.amount}",,`));
+            if(p.tenders) p.tenders.forEach(l => csvRows.push(`TENDER,"${p.id}",,,,"${l.date}","${l.tenderId}","${l.appInfo.replace(/"/g, '""')}","${l.appDate}","${(l.bidder || '').replace(/"/g, '""')}","${l.value}"`));
+            if(p.executions) p.executions.forEach(l => csvRows.push(`EXECUTION,"${p.id}",,,,"${l.date}","${l.component.replace(/"/g, '""')}","${l.progress.replace(/"/g, '""')}","${l.percent}","${l.remarks.replace(/"/g, '""')}",`));
+        });
+
+        const csvContent = "data:text/csv;charset=utf-8," + csvRows.join("\n");
+        const encodedUri = encodeURI(csvContent);
+        const link = document.createElement("a");
+        link.setAttribute("href", encodedUri);
+        link.setAttribute("download", `Project_Diary_Master_Export.csv`);
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
     }
 
-    window.onload = () => { if (sessionStorage.getItem('zccd_auth_session') === 'authenticated') initDashboardPipeline(); };
+    function importDataFromCSV(event) {
+        const file = event.target.files[0];
+        if(!file) return;
+
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            const text = e.target.result;
+            const lines = text.split("\n");
+            let importedDatabase = [];
+
+            for(let i = 1; i < lines.length; i++) {
+                if(!lines[i].trim()) continue;
+                let parts = lines[i].split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/).map(x => x.replace(/^"|"$/g, '').trim());
+                if(parts.length < 2) continue;
+
+                const type = parts[0];
+                const pId = parts[1];
+
+                if(type === "METADATA") {
+                    importedDatabase.push({
+                        id: pId, fy: parts[2], name: parts[3], details: parts[4],
+                        metaLinks:[], plans:[], decisions:[], problems:[], layouts:[], budgets:[], tenders:[], executions:[]
+                    });
+                    continue;
+                }
+
+                let p = importedDatabase.find(proj => proj.id === pId);
+                if(!p) {
+                    p = { id: pId, fy: "Unknown", name: "Imported Record", details: "", metaLinks:[], plans:[], decisions:[], problems:[], layouts:[], budgets:[], tenders:[], executions:[] };
+                    importedDatabase.push(p);
+                }
+
+                if(type === "GDRIVE_META") p.metaLinks.push({ name: parts[5], link: parts[6] });
+                else if(type === "PLAN") p.plans.push({ id: 'L-'+Date.now()+i, date: parts[5], text: parts[6] });
+                else if(type === "DECISION") p.decisions.push({ id: 'L-'+Date.now()+i, date: parts[5], decision: parts[6], work: parts[7] });
+                else if(type === "PROBLEM") p.problems.push({ id: 'L-'+Date.now()+i, date: parts[5], problem: parts[6], discussed: parts[7], implemented: parts[8] });
+                else if(type === "LAYOUT") p.layouts.push({ id: 'L-'+Date.now()+i, date: parts[5], draft: parts[6], note: parts[7] });
+                else if(type === "BUDGET") p.budgets.push({ id: 'L-'+Date.now()+i, date: parts[5], type: parts[6], decision: parts[7], recDate: parts[8], amount: parts[9] });
+                else if(type === "TENDER") p.tenders.push({ id: 'L-'+Date.now()+i, date: parts[5], tenderId: parts[6], appInfo: parts[7], appDate: parts[8], bidder: parts[9], value: parts[10] });
+                else if(type === "EXECUTION") p.executions.push({ id: 'L-'+Date.now()+i, date: parts[5], component: parts[6], progress: parts[7], percent: parts[8], remarks: parts[9] });
+            }
+
+            if(importedDatabase.length > 0) {
+                if(confirm(`Successfully parsed ${importedDatabase.length} projects. Replace your active LocalStorage data?`)) {
+                    database = importedDatabase;
+                    syncMemory();
+                    renderMasterDatabase();
+                }
+            } else {
+                alert("Invalid or corrupt CSV file format mappings.");
+            }
+        };
+        reader.readAsText(file);
+    }
+
+    function clearPageFormFields() {
+        document.querySelectorAll('.app-view input, .app-view textarea').forEach(el => {
+            if(el.id && !el.id.startsWith('w-proj') && !el.classList.contains('gdrive-label-field') && !el.classList.contains('gdrive-url-field')) {
+                el.value = "";
+            }
+        });
+    }
+
+    function syncMemory() {
+        localStorage.setItem('wizard_diary_data_v4_execution', JSON.stringify(database));
+    }
 </script>
 </body>
 </html>
