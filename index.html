@@ -1,1181 +1,2168 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Project Diary Matrix - Minhaj Civil IUT 10</title>
-    <style>
-        :root {
-            --bg-color: #f0f4f8;
-            --card-bg: #ffffff;
-            --text-main: #1e293b;
-            --text-muted: #64748b;
-            --accent: #3b82f6;
-            --accent-gradient: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
-            --border-color: #e2e8f0;
-            --danger: #ef4444;
-            --danger-gradient: linear-gradient(135deg, #ef4444 0%, #b91c1c 100%);
-            --success: #10b981;
-            --success-gradient: linear-gradient(135deg, #10b981 0%, #047857 100%);
-            --warning: #f59e0b;
-            --warning-gradient: linear-gradient(135deg, #f59e0b 0%, #b45309 100%);
-            --execution: #8b5cf6;
-            --execution-gradient: linear-gradient(135deg, #8b5cf6 0%, #6d28d9 100%);
-            --radius-lg: 12px;
-            --radius-md: 8px;
-            --transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-
-        /* --- DYNAMIC NIGHT THEME OVERRIDES --- */
-        body.dark-theme {
-            --bg-color: #0f172a;
-            --card-bg: #1e293b;
-            --text-main: #f8fafc;
-            --text-muted: #94a3b8;
-            --border-color: #334155;
-        }
-
-        body {
-            font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
-            background-color: var(--bg-color);
-            color: var(--text-main);
-            line-height: 1.5;
-            margin: 0;
-            padding: 15px;
-            transition: background-color var(--transition), color var(--transition);
-        }
-
-        .container { max-width: 1100px; margin: 0 auto; }
-        
-        header {
-            text-align: center;
-            margin-bottom: 30px;
-            padding: 20px;
-            background: var(--card-bg);
-            border-radius: var(--radius-lg);
-            box-shadow: 0 4px 20px rgba(0,0,0,0.03);
-            border: 1px solid var(--border-color);
-            position: relative;
-            transition: background-color var(--transition), border-color var(--transition);
-        }
-        header h1 { 
-            margin: 0; 
-            background: var(--accent-gradient);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            font-size: 2.2rem; 
-            font-weight: 800;
-            letter-spacing: -0.5px;
-            padding-right: 100px;
-        }
-        header p { margin: 8px 0 0; color: var(--text-muted); font-weight: 600; font-size: 0.95rem; }
-
-        @media (max-width: 600px) {
-            header h1 { padding-right: 0; font-size: 1.8rem; }
-            header { padding-top: 60px; }
-        }
-
-        .app-view { display: none; animation: fadeIn 0.3s ease; }
-        .app-view.active { display: block; }
-
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(8px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        .box {
-            background: var(--card-bg);
-            border: 1px solid var(--border-color);
-            border-radius: var(--radius-lg);
-            padding: 20px;
-            margin-bottom: 20px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.01);
-            transition: background-color var(--transition), border-color var(--transition);
-        }
-
-        .box-title {
-            font-size: 1.25rem;
-            font-weight: 800;
-            color: var(--text-main);
-            margin-top: 0;
-            margin-bottom: 20px;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-        }
-
-        .wizard-progress {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 6px;
-            justify-content: space-between;
-            margin-bottom: 25px;
-            background: var(--border-color);
-            padding: 8px;
-            border-radius: 8px;
-            transition: background-color var(--transition);
-        }
-        
-        .wizard-step {
-            flex: 1 1 130px;
-            font-size: 0.72rem;
-            font-weight: 700;
-            color: var(--text-muted);
-            text-transform: uppercase;
-            text-align: center;
-            padding: 10px 4px;
-            background: var(--card-bg);
-            border: 1px solid var(--border-color);
-            border-radius: 6px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            box-sizing: border-box;
-            transition: var(--transition);
-        }
-
-        .wizard-step.current {
-            color: #ffffff;
-            background: var(--accent-gradient);
-            border-color: var(--accent);
-        }
-
-        @media (max-width: 768px) {
-            .wizard-step {
-                flex: 1 1 calc(50% - 6px);
-                font-size: 0.7rem;
-                padding: 8px 4px;
-            }
-        }
-
-        .sub-box {
-            border-left: 4px solid var(--accent);
-            padding-left: 15px;
-            margin: 15px 0;
-            background: var(--bg-color);
-            border-radius: 0 var(--radius-md) var(--radius-md) 0;
-            padding-top: 10px;
-            padding-bottom: 10px;
-            transition: background-color var(--transition), border-color var(--transition);
-        }
-
-        label {
-            display: block;
-            font-weight: 600;
-            font-size: 0.8rem;
-            color: var(--text-muted);
-            margin-bottom: 6px;
-            text-transform: uppercase;
-        }
-
-        input, textarea, select {
-            width: 100%;
-            padding: 10px;
-            margin-bottom: 15px;
-            border: 2px solid var(--border-color);
-            border-radius: var(--radius-md);
-            font-size: 0.95rem;
-            font-weight: 500;
-            box-sizing: border-box;
-            background: var(--bg-color);
-            color: var(--text-main);
-            transition: var(--transition);
-        }
-        input:focus, textarea:focus, select:focus {
-            background: var(--card-bg);
-            border-color: var(--accent);
-            box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.1);
-            outline: none;
-        }
-        textarea { min-height: 80px; resize: vertical; }
-
-        .btn-footer-nav {
-            display: flex;
-            justify-content: space-between;
-            margin-top: 25px;
-            border-top: 1px solid var(--border-color);
-            padding-top: 15px;
-            gap: 10px;
-        }
-
-        .btn {
-            padding: 10px 20px;
-            border: none;
-            border-radius: var(--radius-md);
-            font-weight: 700;
-            font-size: 0.9rem;
-            cursor: pointer;
-            color: #fff;
-            background: var(--accent-gradient);
-            box-shadow: 0 4px 10px rgba(59, 130, 246, 0.2);
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            transition: var(--transition);
-        }
-        .btn:hover { 
-            transform: translateY(-2px); 
-            opacity: 0.95;
-        }
-        .btn:active { transform: translateY(0); }
-        .btn-danger { background: var(--danger-gradient); box-shadow: 0 4px 10px rgba(239, 68, 68, 0.2); }
-        .btn-success { background: var(--success-gradient); box-shadow: 0 4px 10px rgba(16, 185, 129, 0.2); }
-        .btn-secondary { background: #64748b; box-shadow: 0 4px 10px rgba(100, 116, 139, 0.2); }
-        .btn-execution { background: var(--execution-gradient); box-shadow: 0 4px 10px rgba(139, 92, 246, 0.2); }
-        .btn-sm { padding: 6px 12px; font-size: 0.8rem; box-shadow: none !important; }
-        .btn-block { width: 100%; padding: 12px; font-size: 1rem; border-radius: var(--radius-lg); }
-
-        .year-header {
-            background: var(--text-main);
-            color: var(--card-bg);
-            padding: 10px 15px;
-            font-size: 1.25rem;
-            font-weight: bold;
-            border-radius: var(--radius-md);
-            margin-top: 30px;
-            transition: background-color var(--transition), color var(--transition);
-        }
-        .project-card {
-            border: 1px solid var(--border-color);
-            background: var(--card-bg);
-            margin-top: 15px;
-            border-radius: 6px;
-            overflow: hidden;
-            transition: background-color var(--transition), border-color var(--transition);
-        }
-        .project-summary {
-            padding: 15px;
-            background: var(--bg-color);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            flex-wrap: wrap;
-            gap: 10px;
-            transition: background-color var(--transition);
-        }
-        .project-meta-info { font-size: 0.95rem; }
-        .project-meta-info code { background: var(--border-color); padding: 2px 6px; border-radius: 4px; color: var(--accent); transition: var(--transition); }
-        .btn-group { display: flex; gap: 8px; flex-wrap: wrap; }
-        
-        .db-table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-bottom: 25px;
-            font-size: 0.85rem;
-        }
-        .db-table th {
-            background: var(--bg-color);
-            color: var(--text-main);
-            text-align: left;
-            padding: 8px 10px;
-            border: 1px solid var(--border-color);
-            transition: background-color var(--transition), border-color var(--transition), color var(--transition);
-        }
-        .db-table td { padding: 8px 10px; border: 1px solid var(--border-color); vertical-align: top; background: var(--card-bg); transition: background-color var(--transition), border-color var(--transition); }
-        .db-table tr:nth-child(even) td { background: var(--bg-color); }
-        .table-responsive { overflow-x: auto; width: 100%; }
-        
-        .gdrive-link-badge {
-            display: inline-block;
-            background: #e8f0fe;
-            color: #1a73e8;
-            padding: 4px 8px;
-            border-radius: 4px;
-            font-weight: 600;
-            font-size: 0.75rem;
-            text-decoration: none;
-            margin-top: 5px;
-            margin-right: 6px;
-            border: 1px solid #d2e3fc;
-        }
-        body.dark-theme .gdrive-link-badge {
-            background: #1e3a8a;
-            color: #38bdf8;
-            border-color: #1e40af;
-        }
-
-        .link-container-wrapper {
-            background: var(--bg-color);
-            border: 2px dashed var(--border-color);
-            padding: 15px;
-            border-radius: var(--radius-lg);
-            margin-bottom: 15px;
-            transition: background-color var(--transition), border-color var(--transition);
-        }
-    </style>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap" rel="stylesheet">
-</head>
-<body>
-
-<div class="container">
-    <header>
-        <h1>Project Diary &amp; Management Matrix</h1>
-        <p>Created by Minhaj Civil IUT 10</p>
-        <button class="btn btn-sm btn-secondary" id="theme-toggle-btn" onclick="toggleTheme()" style="position: absolute; top: 20px; right: 20px;">🌙 Dark Mode</button>
-    </header>
-
-    <div id="view-home" class="app-view active">
-        <div class="box" style="background: var(--border-color); display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; padding: 15px; border: none;">
-            <div style="font-size:0.9rem; font-weight:600; color:var(--text-main);">Database Backup &amp; Migration Utilities:</div>
-            <div class="btn-group">
-                <button class="btn btn-sm" onclick="exportDataToCSV()">📥 Export Master CSV</button>
-                <label class="btn btn-sm btn-success" style="margin:0; cursor:pointer;">
-                    📤 Import CSV File <input type="file" id="csv-file-importer" accept=".csv" style="display:none;" onchange="importDataFromCSV(event)">
-                </label>
-            </div>
-        </div>
-
-        <div class="box">
-            <div class="box-title">Master Project Database (Yearwise Summary)</div>
-            <div id="masterDbContainer"></div>
-        </div>
-        <button class="btn btn-success btn-block" onclick="startNewProjectWizard()">＋ Create New Project Entry Record</button>
-    </div>
-
-    <div id="view-full-details" class="app-view">
-        <div class="box">
-            <div class="box-title" style="display:flex; justify-content:space-between; align-items:center;">
-                <span id="details-page-title">Project Deep-Dive Records</span>
-                <button class="btn btn-sm btn-success" onclick="window.print()">🖨️ Print Project Dossier</button>
-            </div>
-            
-            <div id="fullDetailsRenderContainer"></div>
-
-            <div class="btn-footer-nav">
-                <button class="btn btn-secondary" onclick="navigateToHome()">← Back to Homepage Database</button>
-            </div>
-        </div>
-    </div>
-
-    <div id="view-wizard-p1" class="app-view">
-        <div class="wizard-progress">
-            <span class="wizard-step current">1. Metadata</span>
-            <span class="wizard-step">2. Logs &amp; Decisions</span>
-            <span class="wizard-step">3. Layouts &amp; Drawings</span>
-            <span class="wizard-step">4. Budget Approval</span>
-            <span class="wizard-step">5. Tender Process</span>
-            <span class="wizard-step">6. Work Execution</span>
-        </div>
-        <div class="box">
-            <div class="box-title">Step 1: Core Project Parameters</div>
-            <label>Project ID *</label>
-            <input type="text" id="w-projId" placeholder="e.g., IUT-CIVIL-2026-99">
-            <label>Financial Year (FY) *</label>
-            <input type="text" id="w-projFy" placeholder="e.g., 2026-2027">
-            <label>Name of Project *</label>
-            <input type="text" id="w-projName" placeholder="Enter full administrative name">
-            <label>Details of Project</label>
-            <textarea id="w-projDetails" placeholder="Scope details, measurements, geo-locations..."></textarea>
-            
-            <div class="link-container-wrapper gdrive-input-box-area">
-                <label style="color:var(--accent-light);">Link Google Drive Reference Documents (Unlimited)</label>
-                <div id="p1-links-list"></div>
-                <button class="btn btn-sm" type="button" onclick="addNewDriveLinkInputRow('p1-links-list')">＋ Attach Drive Link</button>
-            </div>
-
-            <div class="btn-footer-nav">
-                <button class="btn btn-secondary" onclick="navigateToHome()">← Return Home</button>
-                <button class="btn" onclick="saveP1AndNext()">Next Page (Logs) →</button>
-            </div>
-        </div>
-    </div>
-
-    <div id="view-wizard-p2" class="app-view">
-        <div class="wizard-progress">
-            <span class="wizard-step">1. Metadata</span>
-            <span class="wizard-step current">2. Logs &amp; Decisions</span>
-            <span class="wizard-step">3. Layouts &amp; Drawings</span>
-            <span class="wizard-step">4. Budget Approval</span>
-            <span class="wizard-step">5. Tender Process</span>
-            <span class="wizard-step">6. Work Execution</span>
-        </div>
-        <div class="box">
-            <div class="box-title">Step 2: Add Datewise Operational Diary Entry</div>
-            <label>Log Entry Target Date</label>
-            <input type="date" id="p2-date">
-            
-            <label>Datewise Plan Details</label>
-            <textarea id="p2-plan" placeholder="Operational milestones planned..."></textarea>
-
-            <label>Datewise Important Decision</label>
-            <textarea id="p2-decision" placeholder="Resolutions or parameters chosen..."></textarea>
-            <div class="sub-box">
-                <label>Datewise Work Executed As Per Decision</label>
-                <textarea id="p2-work" placeholder="Sub-part: Work completed on site..."></textarea>
-            </div>
-
-            <label>Datewise Problem Faced</label>
-            <textarea id="p2-problem" placeholder="Delays, materials, engineering hurdles..."></textarea>
-            <div class="sub-box">
-                <label>Solutions Discussed</label>
-                <textarea id="p2-solDisc" placeholder="Options or brainstorming notes..."></textarea>
-                <label style="margin-top:10px;">Solutions Implemented</label>
-                <textarea id="p2-solImpl" placeholder="Final countermeasure deployment details..."></textarea>
-            </div>
-
-            <div class="link-container-wrapper gdrive-input-box-area">
-                <label style="color:var(--accent-light);">Attach Google Drive Docs/Images to this Log Entry</label>
-                <div id="p2-links-list"></div>
-                <button class="btn btn-sm" type="button" onclick="addNewDriveLinkInputRow('p2-links-list')">＋ Attach Drive Link</button>
-            </div>
-
-            <button class="btn btn-success" onclick="commitP2Log()">Commit Dynamic Log Row</button>
-            <div id="p2-running-table-container" style="margin-top:20px; overflow-x:auto;"></div>
-
-            <div class="btn-footer-nav">
-                <button class="btn btn-secondary" onclick="switchView('view-wizard-p1')">← Previous</button>
-                <button class="btn" onclick="switchView('view-wizard-p3')">Next Page (Design) →</button>
-            </div>
-        </div>
-    </div>
-
-    <div id="view-wizard-p3" class="app-view">
-        <div class="wizard-progress">
-            <span class="wizard-step">1. Metadata</span>
-            <span class="wizard-step">2. Logs &amp; Decisions</span>
-            <span class="wizard-step current">3. Layouts &amp; Drawings</span>
-            <span class="wizard-step">4. Budget Approval</span>
-            <span class="wizard-step">5. Tender Process</span>
-            <span class="wizard-step">6. Work Execution</span>
-        </div>
-        <div class="box">
-            <div class="box-title">Step 3: Layout Tracking &amp; Structural Drawings</div>
-            <label>Date</label>
-            <input type="date" id="p3-date">
-            <label>Datewise Draft Layout Details</label>
-            <textarea id="p3-draft" placeholder="Alignments, survey notes, spatial adjustments..."></textarea>
-            <label>Note Sent to Layout Committee / Design &amp; Drawing Dept.</label>
-            <textarea id="p3-note" placeholder="Memo reference, issues submitted for clearance..."></textarea>
-
-            <div class="link-container-wrapper gdrive-input-box-area">
-                <label style="color:var(--accent-light);">Attach Layout Blueprints/Drawings (Google Drive Link)</label>
-                <div id="p3-links-list"></div>
-                <button class="btn btn-sm" type="button" onclick="addNewDriveLinkInputRow('p3-links-list')">＋ Attach Drive Link</button>
-            </div>
-
-            <button class="btn btn-success" onclick="commitP3Log()">Commit Design Log Row</button>
-            <div id="p3-running-table-container" style="margin-top:20px; overflow-x:auto;"></div>
-
-            <div class="btn-footer-nav">
-                <button class="btn btn-secondary" onclick="switchView('view-wizard-p2')">← Previous</button>
-                <button class="btn" onclick="switchView('view-wizard-p4')">Next Page (Budget Approval) →</button>
-            </div>
-        </div>
-    </div>
-
-    <div id="view-wizard-p4" class="app-view">
-        <div class="wizard-progress">
-            <span class="wizard-step">1. Metadata</span>
-            <span class="wizard-step">2. Logs &amp; Decisions</span>
-            <span class="wizard-step">3. Layouts &amp; Drawings</span>
-            <span class="wizard-step current">4. Budget Approval</span>
-            <span class="wizard-step">5. Tender Process</span>
-            <span class="wizard-step">6. Work Execution</span>
-        </div>
-        <div class="box">
-            <div class="box-title">Step 4: Budget Approval Mapping</div>
-            <label>Log Reference Date</label>
-            <input type="date" id="p4-date">
-            <label>Budget Type</label>
-            <input type="text" id="p4-type" placeholder="e.g., Capital, Revenue Allocation, Grant Fund">
-            <label>Datewise Budget Decisions</label>
-            <textarea id="p4-decision" placeholder="Sanctions, modifications, revisions..."></textarea>
-            
-            <div style="display:grid; grid-template-columns: 1fr 1fr; gap:15px;">
-                <div>
-                    <label>Budget Receive Date</label>
-                    <input type="date" id="p4-recDate">
-                </div>
-                <div>
-                    <label>Amount Received</label>
-                    <input type="number" id="p4-amount" placeholder="0.00">
-                </div>
-            </div>
-
-            <div class="link-container-wrapper gdrive-input-box-area">
-                <label style="color:var(--accent-light);">Attach Budget Approvals / Scan Copies (Google Drive)</label>
-                <div id="p4-links-list"></div>
-                <button class="btn btn-sm" type="button" onclick="addNewDriveLinkInputRow('p4-links-list')">＋ Attach Drive Link</button>
-            </div>
-
-            <button class="btn btn-success" onclick="commitP4Log()">Commit Budget Log Row</button>
-            <div id="p4-running-table-container" style="margin-top:20px; overflow-x:auto;"></div>
-
-            <div class="btn-footer-nav">
-                <button class="btn btn-secondary" onclick="switchView('view-wizard-p3')">← Previous</button>
-                <button class="btn" onclick="switchView('view-wizard-p5')">Next Page (Tender Process) →</button>
-            </div>
-        </div>
-    </div>
-
-    <div id="view-wizard-p5" class="app-view">
-        <div class="wizard-progress">
-            <span class="wizard-step">1. Metadata</span>
-            <span class="wizard-step">2. Logs &amp; Decisions</span>
-            <span class="wizard-step">3. Layouts &amp; Drawings</span>
-            <span class="wizard-step">4. Budget Approval</span>
-            <span class="wizard-step current">5. Tender Process</span>
-            <span class="wizard-step">6. Work Execution</span>
-        </div>
-        <div class="box">
-            <div class="box-title">Step 5: Tender Process &amp; Procurement Records</div>
-            <label>Log Entry Date</label>
-            <input type="date" id="p5-date">
-            <label>Tender ID</label>
-            <input type="text" id="p5-tenderId" placeholder="e.g., IUT/TND-2026-A">
-            <label>Datewise Tender Info with APP Info</label>
-            <textarea id="p5-appInfo" placeholder="Annual Procurement Plan line-item connection context..."></textarea>
-            
-            <div style="display:grid; grid-template-columns: 1fr 1fr 1fr; gap:10px;">
-                <div>
-                    <label>Approved Date</label>
-                    <input type="date" id="p5-appDate">
-                </div>
-                <div>
-                    <label>Winning Bidder Name</label>
-                    <input type="text" id="p5-bidder" placeholder="Vendor / Contractor Name">
-                </div>
-                <div>
-                    <label>Value</label>
-                    <input type="number" id="p5-value" placeholder="Contract Worth">
-                </div>
-            </div>
-
-            <div class="link-container-wrapper gdrive-input-box-area">
-                <label style="color:var(--accent-light);">Attach Tendering Notices / Contractor Bid Forms</label>
-                <div id="p5-links-list"></div>
-                <button class="btn btn-sm" type="button" onclick="addNewDriveLinkInputRow('p5-links-list')">＋ Attach Drive Link</button>
-            </div>
-
-            <button class="btn btn-success" onclick="commitP5Log()">Commit Tender Log Row</button>
-            <div id="p5-running-table-container" style="margin-top:20px; overflow-x:auto;"></div>
-
-            <div class="btn-footer-nav">
-                <button class="btn btn-secondary" onclick="switchView('view-wizard-p4')">← Previous</button>
-                <button class="btn" onclick="switchView('view-wizard-p6')">Next Page (Work Execution) →</button>
-            </div>
-        </div>
-    </div>
-
-    <div id="view-wizard-p6" class="app-view">
-        <div class="wizard-progress">
-            <span class="wizard-step">1. Metadata</span>
-            <span class="wizard-step">2. Logs &amp; Decisions</span>
-            <span class="wizard-step">3. Layouts &amp; Drawings</span>
-            <span class="wizard-step">4. Budget Approval</span>
-            <span class="wizard-step">5. Tender Process</span>
-            <span class="wizard-step current">6. Work Execution</span>
-        </div>
-        <div class="box" style="border-top: 5px solid var(--execution);">
-            <div class="box-title" style="color: var(--execution);">Step 6: Work Execution Phase</div>
-            <label>Execution Log Date</label>
-            <input type="date" id="p6-date">
-            
-            <label>Work Component / Task Description</label>
-            <input type="text" id="p6-component" placeholder="e.g., Piling Work, Superstructure Framing, Concreting">
-            
-            <label>Site Progress Status &amp; Achievements</label>
-            <textarea id="p6-progress" placeholder="Describe physical or structural targets completed on site..."></textarea>
-
-            <div style="display:grid; grid-template-columns: 1fr 1fr; gap:15px;">
-                <div>
-                    <label>Physical Progress (%)</label>
-                    <input type="number" id="p6-percent" min="0" max="100" placeholder="e.g., 45">
-                </div>
-                <div>
-                    <label>Supervising Engineer Remarks</label>
-                    <input type="text" id="p6-remarks" placeholder="Quality checks, site engineer updates">
-                </div>
-            </div>
-
-            <div class="link-container-wrapper gdrive-input-box-area">
-                <label style="color:var(--execution);">Attach Execution Field Reports / Site Quality Photos (Google Drive)</label>
-                <div id="p6-links-list"></div>
-                <button class="btn btn-sm btn-execution" type="button" onclick="addNewDriveLinkInputRow('p6-links-list')">＋ Attach Drive Link</button>
-            </div>
-
-            <button class="btn btn-execution" onclick="commitP6Log()">Commit Execution Log Row</button>
-            <div id="p6-running-table-container" style="margin-top:20px; overflow-x:auto;"></div>
-
-            <div class="btn-footer-nav">
-                <button class="btn btn-secondary" onclick="switchView('view-wizard-p5')">← Previous Page</button>
-                <button class="btn" onclick="navigateToHome()">Finish &amp; Save Master Dossier ✓</button>
-            </div>
-        </div>
-    </div>
-
-</div>
-
-<script>
-    let database = [];
-    try {
-        const rawLocalData = localStorage.getItem('wizard_diary_data_v4_execution');
-        if(rawLocalData) {
-            database = JSON.parse(rawLocalData);
-            database.forEach(p => {
-                if(!p.metaLinks) p.metaLinks = [];
-                if(!p.plans) p.plans = [];
-                if(!p.decisions) p.decisions = [];
-                if(!p.problems) p.problems = [];
-                if(!p.layouts) p.layouts = [];
-                if(!p.budgets) p.budgets = [];
-                if(!p.tenders) p.tenders = [];
-                if(!p.executions) p.executions = [];
-            });
-        }
-    } catch(err) {
-        console.error("Local storage error parsed, resetting clean.", err);
-        database = [];
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>QuestForge - Habit RPG</title>
+  
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  
+  <!-- React & ReactDOM -->
+  <script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin></script>
+  <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" crossorigin></script>
+  
+  <!-- Babel Compiler for JSX -->
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+  
+  <style>
+    .scrollbar-none::-webkit-scrollbar {
+      display: none;
     }
+    .scrollbar-none {
+      -ms-overflow-style: none;
+      scrollbar-width: none;
+    }
+  </style>
+</head>
+<body class="bg-[#0E1117]">
+  <div id="root"></div>
 
-    let currentWorkingProjId = null; 
-    let isEditingExistingMode = false;
+  <script type="text/babel">
+    const { useState, useEffect, useRef, useMemo } = React;
 
-    window.onload = function() {
-        // Hydrate theme configuration state
-        const savedTheme = localStorage.getItem('diary_theme');
-        if(savedTheme === 'dark') {
-            document.body.classList.add('dark-theme');
-            document.getElementById('theme-toggle-btn').innerText = '☀️ Light Mode';
+    // --- LUCIDE ICON HELPER FOR CDN COMPATIBILITY ---
+    const IconWrapper = ({ name, className = "w-4 h-4", ...props }) => {
+      const ref = useRef(null);
+      useEffect(() => {
+        if (ref.current) {
+          ref.current.innerHTML = `<i data-lucide="${name}" class="${className}"></i>`;
+          if (window.lucide) {
+            window.lucide.createIcons({
+              attrs: { class: className },
+              nameAttr: 'data-lucide'
+            });
+          }
         }
-        renderMasterDatabase();
+      }, [name, className]);
+      return <span ref={ref} className="inline-flex items-center justify-center" {...props} />;
     };
 
-    function toggleTheme() {
-        document.body.classList.toggle('dark-theme');
-        const isDark = document.body.classList.contains('dark-theme');
-        localStorage.setItem('diary_theme', isDark ? 'dark' : 'light');
-        document.getElementById('theme-toggle-btn').innerText = isDark ? '☀️ Light Mode' : '🌙 Dark Mode';
-    }
+    const createIcon = (name) => (props) => <IconWrapper name={name} {...props} />;
 
-    function addNewDriveLinkInputRow(containerId, initialValue = "", initialLabel = "") {
-        const container = document.getElementById(containerId);
-        if(!container) return;
-        const div = document.createElement('div');
-        div.className = 'gdrive-input-row';
-        div.style.display = 'flex';
-        div.style.gap = '10px';
-        div.style.marginBottom = '8px';
-        div.innerHTML = `
-            <input type="text" class="gdrive-label-field" placeholder="Label Description" value="${initialLabel}" style="width:35%; margin:0; padding:8px; border-width:1px;">
-            <input type="url" class="gdrive-url-field" placeholder="https://drive.google.com/..." value="${initialValue}" style="width:55%; margin:0; padding:8px; border-width:1px;">
-            <button class="btn btn-danger btn-sm" type="button" onclick="this.parentElement.remove()" style="width:10%; padding:0; height:38px;">&times;</button>
-        `;
-        container.appendChild(div);
-    }
+    const Trophy = createIcon('trophy');
+    const Shield = createIcon('shield');
+    const Sword = createIcon('sword');
+    const Flame = createIcon('flame');
+    const Sparkles = createIcon('sparkles');
+    const BookOpen = createIcon('book-open');
+    const Droplets = createIcon('droplets');
+    const Dumbbell = createIcon('dumbbell');
+    const Code = createIcon('code');
+    const Globe = createIcon('globe');
+    const Moon = createIcon('moon');
+    const Calendar = createIcon('calendar');
+    const BarChart2 = createIcon('bar-chart-2');
+    const User = createIcon('user');
+    const Package = createIcon('package');
+    const Bell = createIcon('bell');
+    const Compass = createIcon('compass');
+    const Plus = createIcon('plus');
+    const Check = createIcon('check');
+    const X = createIcon('x');
+    const Edit3 = createIcon('edit-3');
+    const Trash2 = createIcon('trash-2');
+    const Zap = createIcon('zap');
+    const Lock = createIcon('lock');
+    const Volume2 = createIcon('volume-2');
+    const VolumeX = createIcon('volume-x');
+    const AlertTriangle = createIcon('alert-triangle');
+    const CheckCircle2 = createIcon('check-circle-2');
+    const Clock = createIcon('clock');
+    const PieChart = createIcon('pie-chart');
+    const RotateCcw = createIcon('rotate-ccw');
+    const Camera = createIcon('camera');
 
-    function collectDriveLinksFromContainer(containerId) {
-        const container = document.getElementById(containerId);
-        if(!container) return [];
-        const rows = container.querySelectorAll('.gdrive-input-row');
-        let extractedLinks = [];
-        rows.forEach(row => {
-            const label = row.querySelector('.gdrive-label-field').value.trim();
-            const url = row.querySelector('.gdrive-url-field').value.trim();
-            if(url) {
-                extractedLinks.push({ name: label || "Linked Document", link: url });
-            }
+    // --- SOUND SYNTHESIZER (WEB AUDIO API) ---
+    const playSound = (type, enabled = true) => {
+      if (!enabled) return;
+      try {
+        const AudioContext = window.AudioContext || window.webkitAudioContext;
+        if (!AudioContext) return;
+        const ctx = new AudioContext();
+
+        if (type === 'complete') {
+          const notes = [523.25, 659.25, 783.99, 1046.50];
+          notes.forEach((freq, idx) => {
+            const osc = ctx.createOscillator();
+            const gain = ctx.createGain();
+            osc.type = 'triangle';
+            osc.frequency.setValueAtTime(freq, ctx.currentTime + idx * 0.08);
+            gain.gain.setValueAtTime(0.12, ctx.currentTime + idx * 0.08);
+            gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + idx * 0.08 + 0.3);
+            osc.connect(gain);
+            gain.connect(ctx.destination);
+            osc.start(ctx.currentTime + idx * 0.08);
+            osc.stop(ctx.currentTime + idx * 0.08 + 0.3);
+          });
+        } else if (type === 'levelup') {
+          const notes = [440, 554.37, 659.25, 880, 1108.73, 1318.51];
+          notes.forEach((freq, idx) => {
+            const osc = ctx.createOscillator();
+            const gain = ctx.createGain();
+            osc.type = 'sawtooth';
+            osc.frequency.setValueAtTime(freq, ctx.currentTime + idx * 0.09);
+            gain.gain.setValueAtTime(0.15, ctx.currentTime + idx * 0.09);
+            gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + idx * 0.09 + 0.35);
+            osc.connect(gain);
+            gain.connect(ctx.destination);
+            osc.start(ctx.currentTime + idx * 0.09);
+            osc.stop(ctx.currentTime + idx * 0.09 + 0.35);
+          });
+        } else if (type === 'loot') {
+          for (let i = 0; i < 6; i++) {
+            const osc = ctx.createOscillator();
+            const gain = ctx.createGain();
+            osc.type = 'sine';
+            osc.frequency.setValueAtTime(600 + i * 250, ctx.currentTime + i * 0.06);
+            gain.gain.setValueAtTime(0.1, ctx.currentTime + i * 0.06);
+            gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + i * 0.06 + 0.2);
+            osc.connect(gain);
+            gain.connect(ctx.destination);
+            osc.start(ctx.currentTime + i * 0.06);
+            osc.stop(ctx.currentTime + i * 0.06 + 0.2);
+          }
+        } else if (type === 'click') {
+          const osc = ctx.createOscillator();
+          const gain = ctx.createGain();
+          osc.frequency.setValueAtTime(450, ctx.currentTime);
+          gain.gain.setValueAtTime(0.04, ctx.currentTime);
+          gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.05);
+          osc.connect(gain);
+          gain.connect(ctx.destination);
+          osc.start();
+          osc.stop(ctx.currentTime + 0.05);
+        }
+      } catch (e) {}
+    };
+
+    // --- DATA CATALOG & CONSTANTS ---
+    const HABIT_CATEGORIES = [
+      { id: 'Fitness', name: 'Fitness', icon: Dumbbell, color: 'from-amber-500 to-red-600', textCol: 'text-amber-400', stat: 'Strength' },
+      { id: 'Reading', name: 'Reading', icon: BookOpen, color: 'from-blue-500 to-indigo-600', textCol: 'text-blue-400', stat: 'Knowledge' },
+      { id: 'Water', name: 'Water', icon: Droplets, color: 'from-cyan-400 to-blue-600', textCol: 'text-cyan-400', stat: 'Discipline' },
+      { id: 'Meditation', name: 'Meditation', icon: Moon, color: 'from-purple-500 to-pink-600', textCol: 'text-purple-400', stat: 'Focus' },
+      { id: 'Coding', name: 'Coding', icon: Code, color: 'from-emerald-400 to-teal-600', textCol: 'text-emerald-400', stat: 'Focus' },
+      { id: 'Language', name: 'Language', icon: Globe, color: 'from-yellow-400 to-orange-600', textCol: 'text-yellow-400', stat: 'Knowledge' }
+    ];
+
+    const STREAK_MILESTONES = [3, 7, 15, 21, 30, 40];
+
+    const REWARDS_MASTER = [
+      { id: 'wooden_sword', name: 'Wooden Sword', rarity: 'Common', type: 'weapon', streakReq: 3, category: 'Fitness', stats: { strength: 5 }, desc: 'A basic training sword carved from oak.', icon: '⚔️' },
+      { id: 'traveler_boots', name: 'Traveler Boots', rarity: 'Common', type: 'armor', streakReq: 3, category: 'Language', stats: { focus: 4 }, desc: 'Comfortable footwear for long journeys.', icon: '🥾' },
+      { id: 'apprentice_scroll', name: 'Apprentice Scroll', rarity: 'Common', type: 'artifact', streakReq: 3, category: 'Reading', stats: { knowledge: 5 }, desc: 'Contains foundational magical wisdom.', icon: '📜' },
+      { id: 'zen_pebble', name: 'Zen Pebble', rarity: 'Common', type: 'artifact', streakReq: 3, category: 'Meditation', stats: { discipline: 4 }, desc: 'Smooth river stone that grounds your mind.', icon: '🪨' },
+      { id: 'iron_armor', name: 'Iron Armor', rarity: 'Rare', type: 'armor', streakReq: 7, category: 'Fitness', stats: { strength: 12, discipline: 5 }, desc: 'Forged in dragonfire to withstand harsh battles.', icon: '🛡️' },
+      { id: 'hunter_bow', name: 'Hunter Bow', rarity: 'Rare', type: 'weapon', streakReq: 7, category: 'Language', stats: { focus: 10, knowledge: 6 }, desc: 'Finely strung bow crafted from ancient yew.', icon: '🏹' },
+      { id: 'knowledge_tome', name: 'Knowledge Tome', rarity: 'Rare', type: 'artifact', streakReq: 7, category: 'Reading', stats: { knowledge: 15 }, desc: 'Bound in dark leather with glowing golden runes.', icon: '📖' },
+      { id: 'trident_spear', name: 'Trident Spear', rarity: 'Rare', type: 'weapon', streakReq: 7, category: 'Water', stats: { strength: 8, discipline: 8 }, desc: 'Imbued with ocean tides and crisp waves.', icon: '🔱' },
+      { id: 'shadow_blade', name: 'Shadow Blade', rarity: 'Epic', type: 'weapon', streakReq: 15, category: 'Fitness', stats: { strength: 25, focus: 10 }, desc: 'Forged from dark darksteel that slices through shadows.', icon: '🗡️' },
+      { id: 'arcane_robe', name: 'Arcane Robe', rarity: 'Epic', type: 'armor', streakReq: 15, category: 'Reading', stats: { knowledge: 22, focus: 12 }, desc: 'Woven with enchanted silk that hums with arcane energy.', icon: '🥋' },
+      { id: 'crystal_shield', name: 'Crystal Shield', rarity: 'Epic', type: 'armor', streakReq: 15, category: 'Water', stats: { discipline: 20, strength: 12 }, desc: 'Reflects incoming distractions like pristine ice.', icon: '🛡️' },
+      { id: 'quantum_blade', name: 'Quantum Blade', rarity: 'Epic', type: 'weapon', streakReq: 15, category: 'Coding', stats: { focus: 28 }, desc: 'Cuts through syntax bugs and logic anomalies.', icon: '⚡' },
+      { id: 'wolf_companion', name: 'Wolf Companion', rarity: 'Epic', type: 'pet', streakReq: 21, category: 'Fitness', stats: { strength: 18, discipline: 15 }, desc: 'A loyal silver wolf that runs beside you.', icon: '🐺' },
+      { id: 'phoenix_hatchling', name: 'Phoenix Hatchling', rarity: 'Epic', type: 'pet', streakReq: 21, category: 'Reading', stats: { knowledge: 20, focus: 15 }, desc: 'Reborn from ashes, inspiring eternal learning.', icon: '🦅' },
+      { id: 'ocean_dragon', name: 'Ocean Dragon', rarity: 'Epic', type: 'pet', streakReq: 21, category: 'Water', stats: { discipline: 25 }, desc: 'Serene aquatic dragon that guides water habits.', icon: '🐲' },
+      { id: 'lotus_fox', name: 'Lotus Spirit Fox', rarity: 'Epic', type: 'pet', streakReq: 21, category: 'Meditation', stats: { focus: 25, discipline: 10 }, desc: 'A glowing spirit fox that grants inner calmness.', icon: '🦊' },
+      { id: 'excalibur', name: 'Excalibur', rarity: 'Legendary', type: 'weapon', streakReq: 30, category: 'Fitness', stats: { strength: 45, discipline: 20 }, desc: 'The legendary blade of kings, shining with pure light.', icon: '🗡️✨' },
+      { id: 'frost_reaper', name: 'Frost Reaper', rarity: 'Legendary', type: 'weapon', streakReq: 30, category: 'Water', stats: { strength: 35, discipline: 25 }, desc: 'Freezes bad habits and solidifies flawless streaks.', icon: '🌾❄️' },
+      { id: 'staff_eternity', name: 'Staff of Eternity', rarity: 'Legendary', type: 'weapon', streakReq: 30, category: 'Reading', stats: { knowledge: 50 }, desc: 'Channels cosmic knowledge into unstoppable focus.', icon: '🪄🌟' },
+      { id: 'robo_owl', name: 'Robo Owl Pet', rarity: 'Legendary', type: 'pet', streakReq: 30, category: 'Coding', stats: { focus: 35, knowledge: 20 }, desc: 'Autonomous companion optimizing your cognitive workflows.', icon: '🤖🦉' },
+      { id: 'celestial_dragon', name: 'Celestial Dragon', rarity: 'Mythic', type: 'pet', streakReq: 40, category: 'General', stats: { strength: 30, focus: 30, knowledge: 30, discipline: 30 }, desc: 'A mythical cosmic beast embodying supreme habit mastery.', icon: '🐲✨' },
+      { id: 'titan_armor', name: 'Titan Armor Set', rarity: 'Mythic', type: 'armor', streakReq: 40, category: 'Fitness', stats: { strength: 60, discipline: 40 }, desc: 'Forged from star core metal. Unshakeable and divine.', icon: '🛡️👑' },
+      { id: 'castle_skin', name: 'Legendary Castle Skin', rarity: 'Mythic', type: 'artifact', streakReq: 40, category: 'General', stats: { discipline: 50 }, desc: 'Transforms your domain into a sprawling floating citadel.', icon: '🏰' }
+    ];
+
+    // ZERO STREAK INITIAL HABITS
+    const INITIAL_HABITS = [
+      { id: 'h1', name: 'Morning Workout ⚔️', category: 'Fitness', difficulty: 'Rare', currentStreak: 0, completedToday: false, xpReward: 50, goldReward: 25, reminderTime: '08:00', history: [] },
+      { id: 'h2', name: 'Read 20 Pages 📚', category: 'Reading', difficulty: 'Common', currentStreak: 0, completedToday: false, xpReward: 30, goldReward: 15, reminderTime: '21:00', history: [] },
+      { id: 'h3', name: 'Drink 3L Water 💧', category: 'Water', difficulty: 'Common', currentStreak: 0, completedToday: false, xpReward: 15, goldReward: 10, reminderTime: '12:00', history: [] },
+      { id: 'h4', name: 'Meditation 🧘', category: 'Meditation', difficulty: 'Common', currentStreak: 0, completedToday: false, xpReward: 25, goldReward: 12, reminderTime: '07:30', history: [] },
+      { id: 'h5', name: 'Coding Practice 💻', category: 'Coding', difficulty: 'Epic', currentStreak: 0, completedToday: false, xpReward: 60, goldReward: 30, reminderTime: '16:00', history: [] },
+      { id: 'h6', name: 'Language Learning 🌐', category: 'Language', difficulty: 'Rare', currentStreak: 0, completedToday: false, xpReward: 35, goldReward: 18, reminderTime: '19:00', history: [] }
+    ];
+
+    const GET_RANK_TITLE = (streak) => {
+      if (streak >= 40) return { title: 'Legend', color: 'from-rose-500 via-amber-400 to-yellow-300' };
+      if (streak >= 30) return { title: 'Hero', color: 'from-amber-400 to-yellow-500' };
+      if (streak >= 21) return { title: 'Champion', color: 'from-purple-400 to-indigo-500' };
+      if (streak >= 15) return { title: 'Knight', color: 'from-blue-400 to-cyan-500' };
+      if (streak >= 7) return { title: 'Warrior', color: 'from-emerald-400 to-teal-500' };
+      if (streak >= 3) return { title: 'Adventurer', color: 'from-slate-300 to-slate-400' };
+      return { title: 'Recruit', color: 'from-slate-500 to-slate-600' };
+    };
+
+    const RARITY_COLORS = {
+      Common: { text: 'text-slate-300', border: 'border-slate-600', bg: 'bg-slate-800/80', glow: 'shadow-slate-500/20' },
+      Rare: { text: 'text-blue-400', border: 'border-blue-500', bg: 'bg-blue-950/80', glow: 'shadow-blue-500/30' },
+      Epic: { text: 'text-purple-400', border: 'border-purple-500', bg: 'bg-purple-950/80', glow: 'shadow-purple-500/40' },
+      Legendary: { text: 'text-amber-400', border: 'border-amber-500', bg: 'bg-amber-950/80', glow: 'shadow-amber-500/50' },
+      Mythic: { text: 'text-rose-400 border-rose-500', border: 'border-rose-500', bg: 'bg-rose-950/80', glow: 'shadow-rose-500/60' }
+    };
+
+    // --- MAIN APP COMPONENT ---
+    function App() {
+      const [activeTab, setActiveTab] = useState('dashboard');
+      const [soundEnabled, setSoundEnabled] = useState(true);
+
+      const [user, setUser] = useState(() => {
+        const saved = localStorage.getItem('questforge_user');
+        return saved ? JSON.parse(saved) : {
+          name: 'Sir Questalot',
+          avatar: null,
+          level: 1,
+          xp: 0,
+          xpMax: 100,
+          gold: 0,
+          totalStreak: 0,
+          unlockedItemIds: [],
+          equipped: {
+            weapon: null,
+            armor: null,
+            helmet: null,
+            pet: null,
+            artifact: null
+          }
+        };
+      });
+
+      const [habits, setHabits] = useState(() => {
+        const saved = localStorage.getItem('questforge_habits');
+        return saved ? JSON.parse(saved) : INITIAL_HABITS;
+      });
+
+      const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
+      const [isEditProfileOpen, setIsEditProfileOpen] = useState(false);
+      const [editingHabit, setEditingHabit] = useState(null);
+      const [lootModalItem, setLootModalItem] = useState(null);
+      const [levelUpModal, setLevelUpModal] = useState(null);
+      const [selectedCalendarDay, setSelectedCalendarDay] = useState(null);
+      const [selectedInventoryItem, setSelectedInventoryItem] = useState(null);
+
+      const [currentTime, setCurrentTime] = useState(new Date());
+
+      useEffect(() => {
+        localStorage.setItem('questforge_user', JSON.stringify(user));
+      }, [user]);
+
+      useEffect(() => {
+        localStorage.setItem('questforge_habits', JSON.stringify(habits));
+      }, [habits]);
+
+      useEffect(() => {
+        const timer = setInterval(() => setCurrentTime(new Date()), 1000);
+        return () => clearInterval(timer);
+      }, []);
+
+      const characterStats = useMemo(() => {
+        let base = { discipline: 10, focus: 10, strength: 10, knowledge: 10 };
+        Object.values(user.equipped).forEach(itemId => {
+          if (!itemId) return;
+          const item = REWARDS_MASTER.find(r => r.id === itemId);
+          if (item && item.stats) {
+            Object.entries(item.stats).forEach(([statKey, val]) => {
+              if (base[statKey] !== undefined) {
+                base[statKey] += val;
+              }
+            });
+          }
         });
-        return extractedLinks;
-    }
+        return base;
+      }, [user.equipped]);
 
-    function buildGDriveHtmlBadges(linksArray) {
-        if(!linksArray || linksArray.length === 0) return "";
-        return "<div style='margin-top:4px;'>" + linksArray.map(l => `
-            <a href="${l.link}" target="_blank" class="gdrive-link-badge">📂 ${l.name}</a>
-        `).join(' ') + "</div>";
-    }
+      const handleCompleteQuest = (habitId) => {
+        const todayStr = new Date().toISOString().split('T')[0];
+        let xpGained = 0;
+        let goldGained = 0;
+        let newStreak = 0;
 
-    function switchView(viewId) {
-        document.querySelectorAll('.app-view').forEach(v => v.classList.remove('active'));
-        const targetView = document.getElementById(viewId);
-        if(targetView) targetView.classList.add('active');
-        window.scrollTo(0,0);
-        
-        if(viewId === 'view-wizard-p2') renderSubTablesPage2();
-        if(viewId === 'view-wizard-p3') renderSubTablesPage3();
-        if(viewId === 'view-wizard-p4') renderSubTablesPage4();
-        if(viewId === 'view-wizard-p5') renderSubTablesPage5();
-        if(viewId === 'view-wizard-p6') renderSubTablesPage6();
-    }
+        setHabits(prevHabits =>
+          prevHabits.map(h => {
+            if (h.id === habitId) {
+              if (h.completedToday) return h;
+              xpGained = h.xpReward;
+              goldGained = h.goldReward;
+              newStreak = h.currentStreak + 1;
 
-    function navigateToHome() {
-        currentWorkingProjId = null;
-        isEditingExistingMode = false;
-        renderMasterDatabase();
-        switchView('view-home');
-    }
-
-    function startNewProjectWizard() {
-        currentWorkingProjId = null;
-        isEditingExistingMode = false;
-        
-        document.getElementById('w-projId').disabled = false;
-        document.getElementById('w-projId').value = "";
-        document.getElementById('w-projFy').value = "";
-        document.getElementById('w-projName').value = "";
-        document.getElementById('w-projDetails').value = "";
-        
-        const p1Links = document.getElementById('p1-links-list');
-        if(p1Links) p1Links.innerHTML = "";
-        
-        clearPageFormFields();
-        switchView('view-wizard-p1');
-    }
-
-    function saveP1AndNext() {
-        const id = document.getElementById('w-projId').value.trim();
-        const fy = document.getElementById('w-projFy').value.trim();
-        const name = document.getElementById('w-projName').value.trim();
-        const details = document.getElementById('w-projDetails').value.trim();
-        const links = collectDriveLinksFromContainer('p1-links-list');
-
-        if(!id || !fy || !name) return alert("Error: Fields marked with * are required.");
-
-        if(!isEditingExistingMode) {
-            if(database.some(p => p.id.toLowerCase() === id.toLowerCase())) {
-                return alert("Primary Key Conflict: This Project ID already exists.");
+              return {
+                ...h,
+                completedToday: true,
+                currentStreak: newStreak,
+                history: [...new Set([...h.history, todayStr])]
+              };
             }
-            let targetObj = { id, fy, name, details, metaLinks: links, plans:[], decisions:[], problems:[], layouts:[], budgets:[], tenders:[], executions:[] };
-            database.push(targetObj);
-            currentWorkingProjId = id;
-            isEditingExistingMode = true; 
+            return h;
+          })
+        );
+
+        if (xpGained === 0) return;
+
+        playSound('complete', soundEnabled);
+
+        let newXp = user.xp + xpGained;
+        let newGold = user.gold + goldGained;
+        let newLevel = user.level;
+        let newXpMax = user.xpMax;
+        let leveledUp = false;
+
+        if (newXp >= user.xpMax) {
+          newLevel += 1;
+          newXp = newXp - user.xpMax;
+          newXpMax = Math.floor(user.xpMax * 1.2);
+          leveledUp = true;
+        }
+
+        let newlyUnlockedItem = null;
+        const availableRewards = REWARDS_MASTER.filter(r => r.streakReq <= newStreak && !user.unlockedItemIds.includes(r.id));
+        if (availableRewards.length > 0) {
+          newlyUnlockedItem = availableRewards[0];
+        }
+
+        setUser(prev => ({
+          ...prev,
+          level: newLevel,
+          xp: newXp,
+          xpMax: newXpMax,
+          gold: newGold,
+          totalStreak: Math.max(prev.totalStreak, newStreak),
+          unlockedItemIds: newlyUnlockedItem
+            ? [...prev.unlockedItemIds, newlyUnlockedItem.id]
+            : prev.unlockedItemIds
+        }));
+
+        if (leveledUp) {
+          setTimeout(() => {
+            playSound('levelup', soundEnabled);
+            setLevelUpModal(newLevel);
+          }, 400);
+        }
+
+        if (newlyUnlockedItem) {
+          setTimeout(() => {
+            playSound('loot', soundEnabled);
+            setLootModalItem(newlyUnlockedItem);
+          }, leveledUp ? 1200 : 500);
+        }
+      };
+
+      const handleSaveHabit = (newHabitData) => {
+        if (editingHabit) {
+          setHabits(prev => prev.map(h => h.id === editingHabit.id ? { ...h, ...newHabitData } : h));
+          setEditingHabit(null);
         } else {
-            let idx = database.findIndex(p => p.id === currentWorkingProjId);
-            if(idx !== -1) {
-                database[idx].fy = fy;
-                database[idx].name = name;
-                database[idx].details = details;
-                database[idx].metaLinks = links;
-            }
+          const habit = {
+            id: 'h_' + Date.now(),
+            ...newHabitData,
+            currentStreak: 0,
+            completedToday: false,
+            history: []
+          };
+          setHabits(prev => [...prev, habit]);
         }
-        syncMemory();
-        switchView('view-wizard-p2');
-    }
+        setIsCreateModalOpen(false);
+      };
 
-    function getCurrentProjectRef() {
-        return database.find(p => p.id === currentWorkingProjId);
-    }
-
-    function commitP2Log() {
-        const p = getCurrentProjectRef();
-        const d = document.getElementById('p2-date').value;
-        if(!d) return alert("Select an entry log target date.");
-
-        const links = collectDriveLinksFromContainer('p2-links-list');
-        const planText = document.getElementById('p2-plan').value;
-        const decText = document.getElementById('p2-decision').value;
-        const workText = document.getElementById('p2-work').value;
-        const probText = document.getElementById('p2-problem').value;
-        const discText = document.getElementById('p2-solDisc').value;
-        const implText = document.getElementById('p2-solImpl').value;
-
-        if(planText) p.plans.push({ id: 'L-'+Date.now()+'a', date: d, text: planText, attachments: links });
-        if(decText || workText) p.decisions.push({ id: 'L-'+Date.now()+'b', date: d, decision: decText, work: workText, attachments: links });
-        if(probText || discText || implText) p.problems.push({ id: 'L-'+Date.now()+'c', date: d, problem: probText, discussed: discText, implemented: implText, attachments: links });
-
-        syncMemory();
-        clearPageFormFields();
-        document.getElementById('p2-links-list').innerHTML = "";
-        renderSubTablesPage2();
-    }
-
-    function commitP3Log() {
-        const p = getCurrentProjectRef();
-        const d = document.getElementById('p3-date').value;
-        if(!d) return alert("Select an entry log target date.");
-
-        p.layouts.push({
-            id: 'L-'+Date.now(), date: d,
-            draft: document.getElementById('p3-draft').value,
-            note: document.getElementById('p3-note').value,
-            attachments: collectDriveLinksFromContainer('p3-links-list')
-        });
-
-        syncMemory();
-        clearPageFormFields();
-        document.getElementById('p3-links-list').innerHTML = "";
-        renderSubTablesPage3();
-    }
-
-    function commitP4Log() {
-        const p = getCurrentProjectRef();
-        const d = document.getElementById('p4-date').value;
-        if(!d) return alert("Select an entry log target date.");
-
-        p.budgets.push({
-            id: 'L-'+Date.now(), date: d,
-            type: document.getElementById('p4-type').value,
-            decision: document.getElementById('p4-decision').value,
-            recDate: document.getElementById('p4-recDate').value,
-            amount: document.getElementById('p4-amount').value,
-            attachments: collectDriveLinksFromContainer('p4-links-list')
-        });
-
-        syncMemory();
-        clearPageFormFields();
-        document.getElementById('p4-links-list').innerHTML = "";
-        renderSubTablesPage4();
-    }
-
-    function commitP5Log() {
-        const p = getCurrentProjectRef();
-        const d = document.getElementById('p5-date').value;
-        if(!d) return alert("Select an entry log target date.");
-
-        p.tenders.push({
-            id: 'L-'+Date.now(), date: d,
-            tenderId: document.getElementById('p5-tenderId').value,
-            appInfo: document.getElementById('p5-appInfo').value,
-            appDate: document.getElementById('p5-appDate').value,
-            bidder: document.getElementById('p5-bidder').value,
-            value: document.getElementById('p5-value').value,
-            attachments: collectDriveLinksFromContainer('p5-links-list')
-        });
-
-        syncMemory();
-        clearPageFormFields();
-        document.getElementById('p5-links-list').innerHTML = "";
-        renderSubTablesPage5();
-    }
-
-    function commitP6Log() {
-        const p = getCurrentProjectRef();
-        const d = document.getElementById('p6-date').value;
-        if(!d) return alert("Select a work execution entry date.");
-
-        p.executions.push({
-            id: 'L-'+Date.now(), date: d,
-            component: document.getElementById('p6-component').value.trim(),
-            progress: document.getElementById('p6-progress').value.trim(),
-            percent: document.getElementById('p6-percent').value.trim(),
-            remarks: document.getElementById('p6-remarks').value.trim(),
-            attachments: collectDriveLinksFromContainer('p6-links-list')
-        });
-
-        syncMemory();
-        clearPageFormFields();
-        document.getElementById('p6-links-list').innerHTML = "";
-        renderSubTablesPage6();
-    }
-
-    function renderSubTablesPage2() {
-        const p = getCurrentProjectRef();
-        let html = `<h4>Current Operational Logs:</h4>`;
-        html += `<table class="db-table"><tr><th>Type</th><th>Date</th><th>Logged Value</th><th>Action</th></tr>`;
-        p.plans.forEach(r => html += `<tr><td>Plan</td><td>${r.date}</td><td>${r.text} ${buildGDriveHtmlBadges(r.attachments)}</td><td><button class="btn btn-sm btn-danger" onclick="removeSubRow('plans','${r.id}','view-wizard-p2')">&times;</button></td></tr>`);
-        p.decisions.forEach(r => html += `<tr><td>Decision</td><td>${r.date}</td><td><strong>Decision:</strong> ${r.decision}<br><strong>Work:</strong> ${r.work} ${buildGDriveHtmlBadges(r.attachments)}</td><td><button class="btn btn-sm btn-danger" onclick="removeSubRow('decisions','${r.id}','view-wizard-p2')">&times;</button></td></tr>`);
-        p.problems.forEach(r => html += `<tr><td>Problem</td><td>${r.date}</td><td><strong>Problem:</strong> ${r.problem}<br><strong>Solutions:</strong> ${r.discussed || r.implemented} ${buildGDriveHtmlBadges(r.attachments)}</td><td><button class="btn btn-sm btn-danger" onclick="removeSubRow('problems','${r.id}','view-wizard-p2')">&times;</button></td></tr>`);
-        html += `</table>`;
-        const container = document.getElementById('p2-running-table-container');
-        if(container) container.innerHTML = (p.plans.length + p.decisions.length + p.problems.length === 0) ? "" : html;
-    }
-
-    function renderSubTablesPage3() {
-        const p = getCurrentProjectRef();
-        let html = `<table class="db-table"><tr><th>Date</th><th>Draft Layout</th><th>Note sent</th><th>Action</th></tr>`;
-        p.layouts.forEach(r => html += `<tr><td>${r.date}</td><td>${r.draft} ${buildGDriveHtmlBadges(r.attachments)}</td><td>${r.note}</td><td><button class="btn btn-sm btn-danger" onclick="removeSubRow('layouts','${r.id}','view-wizard-p3')">&times;</button></td></tr>`);
-        html += `</table>`;
-        const container = document.getElementById('p3-running-table-container');
-        if(container) container.innerHTML = p.layouts.length === 0 ? "" : html;
-    }
-
-    function renderSubTablesPage4() {
-        const p = getCurrentProjectRef();
-        let html = `<table class="db-table"><tr><th>Date</th><th>Type</th><th>Decision</th><th>Received Date</th><th>Amount</th><th>Action</th></tr>`;
-        p.budgets.forEach(r => html += `<tr><td>${r.date}</td><td>${r.type}</td><td>${r.decision} ${buildGDriveHtmlBadges(r.attachments)}</td><td>${r.recDate}</td><td>${Number(r.amount).toLocaleString()}</td><td><button class="btn btn-sm btn-danger" onclick="removeSubRow('budgets','${r.id}','view-wizard-p4')">&times;</button></td></tr>`);
-        html += `</table>`;
-        const container = document.getElementById('p4-running-table-container');
-        if(container) container.innerHTML = p.budgets.length === 0 ? "" : html;
-    }
-
-    function renderSubTablesPage5() {
-        const p = getCurrentProjectRef();
-        let html = `<table class="db-table"><tr><th>Date</th><th>Tender ID</th><th>Info / APP</th><th>Approved Date</th><th>Winner / Bidder</th><th>Value</th><th>Action</th></tr>`;
-        p.tenders.forEach(r => html += `<tr><td>${r.date}</td><td><code>${r.tenderId}</code></td><td>${r.appInfo} ${buildGDriveHtmlBadges(r.attachments)}</td><td>${r.appDate || 'N/A'}</td><td><strong>${r.bidder || 'N/A'}</strong></td><td>${Number(r.value).toLocaleString()}</td><td><button class="btn btn-sm btn-danger" onclick="removeSubRow('tenders','${r.id}','view-wizard-p5')">&times;</button></td></tr>`);
-        html += `</table>`;
-        const container = document.getElementById('p5-running-table-container');
-        if(container) container.innerHTML = p.tenders.length === 0 ? "" : html;
-    }
-
-    function renderSubTablesPage6() {
-        const p = getCurrentProjectRef();
-        let html = `<table class="db-table"><tr><th>Date</th><th>Component</th><th>Progress Achievements</th><th>% Complete</th><th>Remarks</th><th>Action</th></tr>`;
-        p.executions.forEach(r => html += `<tr><td>${r.date}</td><td><strong>${r.component}</strong></td><td>${r.progress} ${buildGDriveHtmlBadges(r.attachments)}</td><td><strong>${r.percent}%</strong></td><td><i>${r.remarks || 'None'}</i></td><td><button class="btn btn-sm btn-danger" onclick="removeSubRow('executions','${r.id}','view-wizard-p6')">&times;</button></td></tr>`);
-        html += `</table>`;
-        const container = document.getElementById('p6-running-table-container');
-        if(container) container.innerHTML = p.executions.length === 0 ? "" : html;
-    }
-
-    function removeSubRow(arrayName, rowId, pageViewRefresh) {
-        if(confirm("Erase entry row context?")) {
-            const p = getCurrentProjectRef();
-            p[arrayName] = p[arrayName].filter(r => r.id !== rowId);
-            syncMemory();
-            switchView(pageViewRefresh);
+      const handleDeleteHabit = (id) => {
+        if (window.confirm("Are you sure you want to abandon and delete this habit quest?")) {
+          setHabits(prev => prev.filter(h => h.id !== id));
+          playSound('click', soundEnabled);
         }
-    }
+      };
 
-    function editEntireProjectRoute(id) {
-        currentWorkingProjId = id;
-        isEditingExistingMode = true;
-        const p = database.find(proj => proj.id === id);
+      const handleSaveProfile = (profileData) => {
+        setUser(prev => ({ ...prev, name: profileData.name, avatar: profileData.avatar }));
+        playSound('click', soundEnabled);
+      };
 
-        document.getElementById('w-projId').disabled = true;
-        document.getElementById('w-projId').value = p.id;
-        document.getElementById('w-projFy').value = p.fy;
-        document.getElementById('w-projName').value = p.name;
-        document.getElementById('w-projDetails').value = p.details || '';
+      const handleEquipItem = (item) => {
+        playSound('click', soundEnabled);
+        setUser(prev => ({
+          ...prev,
+          equipped: {
+            ...prev.equipped,
+            [item.type]: prev.equipped[item.type] === item.id ? null : item.id
+          }
+        }));
+      };
 
-        const listContainer = document.getElementById('p1-links-list');
-        if(listContainer) {
-            listContainer.innerHTML = "";
-            if(p.metaLinks) {
-                p.metaLinks.forEach(l => addNewDriveLinkInputRow('p1-links-list', l.link, l.name));
-            }
+      const handleResetData = () => {
+        if (window.confirm("Reset QuestForge data to initial state?")) {
+          localStorage.removeItem('questforge_user');
+          localStorage.removeItem('questforge_habits');
+          window.location.reload();
         }
+      };
 
-        switchView('view-wizard-p1');
+      const formattedDate = currentTime.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' });
+      const formattedTime = currentTime.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+
+      const currentRank = GET_RANK_TITLE(user.totalStreak);
+
+      return (
+        <div className="min-h-screen bg-[#0E1117] text-slate-100 font-sans selection:bg-amber-500 selection:text-slate-900 pb-20 md:pb-6">
+          <div className="fixed inset-0 pointer-events-none z-0 overflow-hidden">
+            <div className="absolute -top-40 -left-40 w-96 h-96 bg-purple-900/20 rounded-full blur-3xl"></div>
+            <div className="absolute top-1/3 -right-40 w-96 h-96 bg-amber-600/15 rounded-full blur-3xl"></div>
+            <div className="absolute -bottom-40 left-1/3 w-96 h-96 bg-emerald-900/15 rounded-full blur-3xl"></div>
+          </div>
+
+          <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+
+            {/* TOP HEADER BAR */}
+            <header className="flex flex-wrap items-center justify-between gap-4 p-4 rounded-2xl bg-slate-900/80 backdrop-blur-md border border-amber-500/20 shadow-lg mb-6">
+              <div className="flex items-center gap-3">
+                <div className="relative flex items-center justify-center w-12 h-12 rounded-xl bg-gradient-to-br from-amber-500 to-purple-600 text-slate-950 font-black text-2xl shadow-lg shadow-amber-500/20">
+                  ⚔️
+                </div>
+                <div>
+                  <h1 className="text-2xl font-bold bg-gradient-to-r from-amber-300 via-amber-400 to-amber-500 bg-clip-text text-transparent font-serif tracking-wide">
+                    QuestForge
+                  </h1>
+                  <p className="text-xs text-slate-400 flex items-center gap-2">
+                    <span>Habit RPG</span>
+                    <span className="inline-block w-1 h-1 rounded-full bg-amber-500"></span>
+                    <span className="text-amber-400/90 font-medium">{formattedDate} • {formattedTime}</span>
+                  </p>
+                </div>
+              </div>
+
+              {/* QUICK STATS HEADER BADGES */}
+              <div className="flex items-center gap-3 sm:gap-4 overflow-x-auto py-1">
+                <div className="flex items-center gap-2 px-3 py-1.5 rounded-xl bg-slate-800/80 border border-slate-700/60">
+                  <span className="text-xs text-slate-400">Level</span>
+                  <span className="font-bold text-amber-400">{user.level}</span>
+                </div>
+
+                <div className="flex items-center gap-2 px-3 py-1.5 rounded-xl bg-slate-800/80 border border-slate-700/60">
+                  <Zap className="w-4 h-4 text-amber-400" />
+                  <div className="flex flex-col">
+                    <span className="text-[10px] text-slate-400 leading-none">XP</span>
+                    <span className="text-xs font-semibold text-slate-200">{user.xp}/{user.xpMax}</span>
+                  </div>
+                </div>
+
+                <div className="flex items-center gap-2 px-3 py-1.5 rounded-xl bg-slate-800/80 border border-amber-500/30">
+                  <span className="text-amber-400 font-bold">🪙</span>
+                  <span className="font-bold text-amber-300">{user.gold}</span>
+                </div>
+
+                <div className="flex items-center gap-2 px-3 py-1.5 rounded-xl bg-gradient-to-r from-amber-500/10 to-orange-500/10 border border-amber-500/40">
+                  <Flame className="w-4 h-4 text-amber-400 animate-pulse" />
+                  <span className="font-extrabold text-amber-400">{user.totalStreak} Days</span>
+                </div>
+
+                <button
+                  onClick={() => setSoundEnabled(!soundEnabled)}
+                  className="p-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700 transition"
+                  title="Toggle SFX Audio"
+                >
+                  {soundEnabled ? <Volume2 className="w-4 h-4 text-amber-400" /> : <VolumeX className="w-4 h-4 text-slate-500" />}
+                </button>
+
+                <button
+                  onClick={handleResetData}
+                  className="p-2 rounded-xl bg-slate-800 hover:bg-rose-950/50 text-slate-400 hover:text-rose-400 border border-slate-700 transition"
+                  title="Reset Demo Data"
+                >
+                  <RotateCcw className="w-4 h-4" />
+                </button>
+              </div>
+            </header>
+
+            {/* ALL 8 NAVIGATION TABS */}
+            <nav className="flex items-center gap-1 overflow-x-auto p-1.5 rounded-2xl bg-slate-900/90 border border-slate-800 backdrop-blur-md mb-6 shadow-inner scrollbar-none">
+              {[
+                { id: 'dashboard', label: 'Dashboard', icon: Compass },
+                { id: 'quests', label: 'Habit Quests', icon: Sword },
+                { id: 'calendar', label: 'Calendar View', icon: Calendar },
+                { id: 'character', label: 'Character', icon: User },
+                { id: 'inventory', label: 'Inventory', icon: Package },
+                { id: 'progress', label: 'Progress Center', icon: Trophy },
+                { id: 'reminders', label: 'Reminders', icon: Bell },
+                { id: 'analytics', label: 'Analytics', icon: BarChart2 }
+              ].map(tab => {
+                const Icon = tab.icon;
+                const isActive = activeTab === tab.id;
+                return (
+                  <button
+                    key={tab.id}
+                    onClick={() => {
+                      playSound('click', soundEnabled);
+                      setActiveTab(tab.id);
+                    }}
+                    className={`flex items-center gap-2 px-4 py-2.5 rounded-xl font-medium text-xs sm:text-sm whitespace-nowrap transition-all duration-200 ${
+                      isActive
+                        ? 'bg-gradient-to-r from-amber-500 to-amber-600 text-slate-950 font-bold shadow-md shadow-amber-500/20 scale-[1.02]'
+                        : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/60'
+                    }`}
+                  >
+                    <Icon className={`w-4 h-4 ${isActive ? 'text-slate-950' : 'text-slate-400'}`} />
+                    <span>{tab.label}</span>
+                  </button>
+                );
+              })}
+            </nav>
+
+            {/* ACTIVE TAB CONTENT DISPLAY */}
+            <main className="space-y-6">
+              {activeTab === 'dashboard' && (
+                <DashboardView
+                  user={user}
+                  habits={habits}
+                  currentRank={currentRank}
+                  characterStats={characterStats}
+                  onComplete={handleCompleteQuest}
+                  onDelete={handleDeleteHabit}
+                  onOpenCreate={() => setIsCreateModalOpen(true)}
+                  onOpenEditProfile={() => setIsEditProfileOpen(true)}
+                  setActiveTab={setActiveTab}
+                />
+              )}
+
+              {activeTab === 'quests' && (
+                <HabitQuestsView
+                  habits={habits}
+                  onComplete={handleCompleteQuest}
+                  onOpenCreate={() => { setEditingHabit(null); setIsCreateModalOpen(true); }}
+                  onEdit={(habit) => { setEditingHabit(habit); setIsCreateModalOpen(true); }}
+                  onDelete={handleDeleteHabit}
+                />
+              )}
+
+              {activeTab === 'calendar' && (
+                <CalendarView
+                  habits={habits}
+                  onSelectDay={(dayData) => setSelectedCalendarDay(dayData)}
+                />
+              )}
+
+              {activeTab === 'character' && (
+                <CharacterView
+                  user={user}
+                  characterStats={characterStats}
+                  currentRank={currentRank}
+                  onOpenEditProfile={() => setIsEditProfileOpen(true)}
+                />
+              )}
+
+              {activeTab === 'inventory' && (
+                <InventoryView
+                  user={user}
+                  onEquip={handleEquipItem}
+                  onInspectItem={(item) => setSelectedInventoryItem(item)}
+                />
+              )}
+
+              {activeTab === 'progress' && (
+                <ProgressCenterView
+                  habits={habits}
+                  unlockedItemIds={user.unlockedItemIds}
+                />
+              )}
+
+              {activeTab === 'reminders' && (
+                <ReminderCenterView
+                  habits={habits}
+                  onComplete={handleCompleteQuest}
+                />
+              )}
+
+              {activeTab === 'analytics' && (
+                <AnalyticsView
+                  habits={habits}
+                  user={user}
+                />
+              )}
+            </main>
+          </div>
+
+          {/* MOBILE NAVIGATION DOCK */}
+          <div className="fixed bottom-0 left-0 right-0 md:hidden bg-slate-950/95 border-t border-slate-800 p-2 z-40 backdrop-blur-lg flex justify-around items-center">
+            {[
+              { id: 'dashboard', label: 'Dash', icon: Compass },
+              { id: 'quests', label: 'Quests', icon: Sword },
+              { id: 'calendar', label: 'Calendar', icon: Calendar },
+              { id: 'character', label: 'Hero', icon: User },
+              { id: 'inventory', label: 'Loot', icon: Package }
+            ].map(tab => {
+              const Icon = tab.icon;
+              const isActive = activeTab === tab.id;
+              return (
+                <button
+                  key={tab.id}
+                  onClick={() => {
+                    playSound('click', soundEnabled);
+                    setActiveTab(tab.id);
+                  }}
+                  className={`flex flex-col items-center gap-1 p-2 rounded-xl transition ${
+                    isActive ? 'text-amber-400 font-bold' : 'text-slate-500'
+                  }`}
+                >
+                  <Icon className="w-5 h-5" />
+                  <span className="text-[10px]">{tab.label}</span>
+                </button>
+              );
+            })}
+          </div>
+
+          {/* ALL MODALS */}
+          {isCreateModalOpen && (
+            <CreateHabitModal
+              habitToEdit={editingHabit}
+              onSave={handleSaveHabit}
+              onClose={() => setIsCreateModalOpen(false)}
+            />
+          )}
+
+          {isEditProfileOpen && (
+            <EditProfileModal
+              user={user}
+              onSave={handleSaveProfile}
+              onClose={() => setIsEditProfileOpen(false)}
+            />
+          )}
+
+          {lootModalItem && (
+            <LootRevealModal
+              item={lootModalItem}
+              onClose={() => setLootModalItem(null)}
+              onEquip={() => {
+                handleEquipItem(lootModalItem);
+                setLootModalItem(null);
+              }}
+            />
+          )}
+
+          {levelUpModal && (
+            <LevelUpModal
+              level={levelUpModal}
+              onClose={() => setLevelUpModal(null)}
+            />
+          )}
+
+          {selectedCalendarDay && (
+            <CalendarDayDetailModal
+              dayData={selectedCalendarDay}
+              onClose={() => setSelectedCalendarDay(null)}
+            />
+          )}
+
+          {selectedInventoryItem && (
+            <ItemDetailModal
+              item={selectedInventoryItem}
+              isEquipped={Object.values(user.equipped).includes(selectedInventoryItem.id)}
+              isUnlocked={user.unlockedItemIds.includes(selectedInventoryItem.id)}
+              onEquip={() => {
+                handleEquipItem(selectedInventoryItem);
+                setSelectedInventoryItem(null);
+              }}
+              onClose={() => setSelectedInventoryItem(null)}
+            />
+          )}
+        </div>
+      );
     }
 
-    function deleteEntireProject(id) {
-        if(confirm("Completely wipe this structural dataset record from storage?")) {
-            database = database.filter(p => p.id !== id);
-            syncMemory();
-            renderMasterDatabase();
-        }
-    }
+    // ==========================================
+    // PAGE 1: DASHBOARD VIEW
+    // ==========================================
+    function DashboardView({ user, habits, currentRank, characterStats, onComplete, onDelete, onOpenCreate, onOpenEditProfile, setActiveTab }) {
+      const activeQuests = habits.filter(h => !h.completedToday);
+      const completedTodayCount = habits.filter(h => h.completedToday).length;
+      const completionRate = habits.length ? Math.round((completedTodayCount / habits.length) * 100) : 0;
 
-    function showFullDetailsPage(id) {
-        const p = database.find(proj => proj.id === id);
-        if(!p) return;
+      const weeklyStats = [
+        { day: 'Mon', completed: 0 },
+        { day: 'Tue', completed: 0 },
+        { day: 'Wed', completed: 0 },
+        { day: 'Thu', completed: 0 },
+        { day: 'Fri', completed: completionRate },
+        { day: 'Sat', completed: 0 },
+        { day: 'Sun', completed: 0 }
+      ];
 
-        document.getElementById('details-page-title').innerText = `Full Details Dossier: [${p.id}]`;
-        
-        let htmlContent = `
-            <div style="background: var(--bg-color); padding: 20px; border-radius: var(--radius-lg); margin-bottom: 25px; border-left:5px solid var(--accent);">
-                <p style="margin: 0 0 8px 0; font-size:1.05rem;"><strong>Financial Year (FY):</strong> ${p.fy}</p>
-                <p style="margin: 0 0 8px 0; font-size:1.05rem;"><strong>Project ID:</strong> ${p.id}</p>
-                <p style="margin: 0 0 8px 0; font-size:1.05rem;"><strong>Name of Project:</strong> ${p.name}</p>
-                <p style="margin: 0 0 12px 0; font-size:1.05rem;"><strong>Baseline Scope parameters:</strong> ${p.details || 'N/A'}</p>
-                ${p.metaLinks && p.metaLinks.length > 0 ? `<p style="margin:0;"><strong>Master Blueprints Archive:</strong> ${buildGDriveHtmlBadges(p.metaLinks)}</p>` : ''}
+      const petItem = REWARDS_MASTER.find(r => r.id === user.equipped.pet);
+
+      return (
+        <div className="space-y-6">
+          {/* HERO CARD OVERVIEW */}
+          <div className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-slate-900 via-slate-900/90 to-purple-950/40 border border-amber-500/30 p-6 shadow-2xl">
+            <div className="absolute top-0 right-0 w-80 h-80 bg-gradient-to-br from-amber-500/10 to-purple-600/10 rounded-full blur-2xl pointer-events-none"></div>
+
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 items-center">
+              {/* AVATAR + KNIGHT NAME + RANK TITLE */}
+              <div className="flex items-center gap-5">
+                <div className="relative group">
+                  <div className="w-20 h-20 rounded-2xl bg-slate-800 border-2 border-amber-400 p-0.5 shadow-lg shadow-amber-500/20 overflow-hidden flex items-center justify-center text-4xl">
+                    {user.avatar ? (
+                      <img src={user.avatar} alt="Knight Avatar" className="w-full h-full object-cover" />
+                    ) : (
+                      <span>🛡️</span>
+                    )}
+                  </div>
+                  <button
+                    onClick={onOpenEditProfile}
+                    className="absolute -top-2 -right-2 p-1.5 rounded-full bg-amber-400 text-slate-950 shadow-md hover:scale-110 transition"
+                    title="Change Knight Photo & Name"
+                  >
+                    <Edit3 className="w-3.5 h-3.5" />
+                  </button>
+                  <div className="absolute -bottom-2 -right-2 px-2 py-0.5 rounded-full bg-amber-500 text-slate-950 font-black text-xs border border-slate-900 shadow">
+                    Lvl {user.level}
+                  </div>
+                </div>
+
+                <div>
+                  <div className="flex items-center gap-2">
+                    <span className={`text-xs uppercase tracking-wider font-extrabold bg-gradient-to-r ${currentRank.color} bg-clip-text text-transparent`}>
+                      {currentRank.title} Rank
+                    </span>
+                    <span className="text-xs px-2 py-0.5 rounded bg-amber-500/10 border border-amber-500/30 text-amber-300 font-medium">
+                      {user.totalStreak}d Streak 🔥
+                    </span>
+                  </div>
+                  
+                  <h2 className="text-2xl font-bold font-serif text-slate-100 flex items-center gap-2">
+                    {user.name || 'Sir Questalot'}
+                    <button onClick={onOpenEditProfile} className="text-slate-500 hover:text-amber-400 transition text-xs">
+                      <Edit3 className="w-4 h-4" />
+                    </button>
+                  </h2>
+
+                  <p className="text-xs text-slate-400 flex items-center gap-2 mt-1">
+                    <span>Pet: <strong className="text-slate-200">{petItem ? petItem.name : 'None'}</strong> {petItem?.icon}</span>
+                    <span>•</span>
+                    <span>Gold: <strong className="text-amber-400">{user.gold} 🪙</strong></span>
+                  </p>
+                </div>
+              </div>
+
+              {/* XP PROGRESS BAR & QUICK STATS */}
+              <div className="space-y-2 lg:col-span-2">
+                <div className="flex justify-between items-center text-xs font-medium">
+                  <span className="text-slate-300 flex items-center gap-1.5">
+                    <Zap className="w-4 h-4 text-amber-400" />
+                    Experience Progress
+                  </span>
+                  <span className="text-amber-400 font-bold">{user.xp} / {user.xpMax} XP</span>
+                </div>
+
+                <div className="relative w-full h-4 bg-slate-950 rounded-full overflow-hidden p-0.5 border border-slate-800">
+                  <div
+                    className="h-full rounded-full bg-gradient-to-r from-amber-500 via-amber-400 to-yellow-300 transition-all duration-500 shadow-sm shadow-amber-500/50"
+                    style={{ width: `${Math.min(100, (user.xp / user.xpMax) * 100)}%` }}
+                  ></div>
+                </div>
+
+                <div className="grid grid-cols-4 gap-2 pt-2">
+                  <div className="p-2 rounded-xl bg-slate-800/60 border border-slate-700/50 text-center">
+                    <div className="text-[10px] text-slate-400">Strength</div>
+                    <div className="text-xs font-bold text-amber-400">{characterStats.strength}</div>
+                  </div>
+                  <div className="p-2 rounded-xl bg-slate-800/60 border border-slate-700/50 text-center">
+                    <div className="text-[10px] text-slate-400">Knowledge</div>
+                    <div className="text-xs font-bold text-blue-400">{characterStats.knowledge}</div>
+                  </div>
+                  <div className="p-2 rounded-xl bg-slate-800/60 border border-slate-700/50 text-center">
+                    <div className="text-[10px] text-slate-400">Focus</div>
+                    <div className="text-xs font-bold text-purple-400">{characterStats.focus}</div>
+                  </div>
+                  <div className="p-2 rounded-xl bg-slate-800/60 border border-slate-700/50 text-center">
+                    <div className="text-[10px] text-slate-400">Discipline</div>
+                    <div className="text-xs font-bold text-emerald-400">{characterStats.discipline}</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* DASHBOARD GRID CONTENT */}
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+
+            {/* ACTIVE QUESTS QUICK COMPLETE SECTION (2 COLS) */}
+            <div className="lg:col-span-2 space-y-4">
+              <div className="flex justify-between items-center">
+                <h3 className="text-lg font-bold font-serif text-slate-100 flex items-center gap-2">
+                  <Sword className="w-5 h-5 text-amber-400" />
+                  Active Daily Quests ({activeQuests.length})
+                </h3>
+                <button
+                  onClick={onOpenCreate}
+                  className="flex items-center gap-1.5 text-xs font-bold text-slate-950 bg-amber-400 hover:bg-amber-300 px-3 py-1.5 rounded-xl transition shadow-md shadow-amber-500/20"
+                >
+                  <Plus className="w-4 h-4" />
+                  New Quest
+                </button>
+              </div>
+
+              {activeQuests.length === 0 ? (
+                <div className="p-8 rounded-2xl bg-slate-900/60 border border-emerald-500/30 text-center space-y-3">
+                  <div className="w-12 h-12 rounded-full bg-emerald-500/20 text-emerald-400 flex items-center justify-center mx-auto text-xl">
+                    ✨
+                  </div>
+                  <h4 className="font-bold text-slate-200">All Daily Quests Cleared!</h4>
+                  <p className="text-xs text-slate-400 max-w-md mx-auto">
+                    You've conquered every habit quest today. Rest up, warrior, or forge a new quest to push your streak even further!
+                  </p>
+                </div>
+              ) : (
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  {activeQuests.map(habit => {
+                    const catObj = HABIT_CATEGORIES.find(c => c.id === habit.category) || HABIT_CATEGORIES[0];
+                    const Icon = catObj.icon;
+                    return (
+                      <div
+                        key={habit.id}
+                        className="p-4 rounded-2xl bg-slate-900/80 border border-slate-800 hover:border-amber-500/40 transition-all shadow-lg flex flex-col justify-between space-y-3 group"
+                      >
+                        <div className="flex justify-between items-start">
+                          <div className="flex items-center gap-3">
+                            <div className={`p-2.5 rounded-xl bg-gradient-to-br ${catObj.color} text-slate-950 shadow-md`}>
+                              <Icon className="w-5 h-5" />
+                            </div>
+                            <div>
+                              <h4 className="font-bold text-sm text-slate-200 group-hover:text-amber-300 transition">
+                                {habit.name}
+                              </h4>
+                              <p className="text-[11px] text-slate-400">
+                                Streak: <span className="text-amber-400 font-bold">{habit.currentStreak} Days 🔥</span>
+                              </p>
+                            </div>
+                          </div>
+
+                          <div className="flex items-center gap-1">
+                            <span className="text-[10px] px-2 py-0.5 rounded bg-slate-800 text-slate-400 border border-slate-700">
+                              +{habit.xpReward} XP
+                            </span>
+                            <button
+                              onClick={() => onDelete(habit.id)}
+                              className="p-1 rounded-lg text-slate-500 hover:text-rose-400 hover:bg-rose-950/40 transition"
+                              title="Delete Habit"
+                            >
+                              <Trash2 className="w-4 h-4" />
+                            </button>
+                          </div>
+                        </div>
+
+                        <div className="flex justify-between items-center pt-2 border-t border-slate-800/80">
+                          <span className="text-xs text-slate-400 flex items-center gap-1">
+                            <Clock className="w-3.5 h-3.5 text-amber-400" />
+                            {habit.reminderTime || 'Anytime'}
+                          </span>
+                          <button
+                            onClick={() => onComplete(habit.id)}
+                            className="flex items-center gap-1 px-3 py-1.5 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-400 hover:to-teal-500 text-slate-950 text-xs font-bold transition shadow-md shadow-emerald-500/20 active:scale-95"
+                          >
+                            <Check className="w-3.5 h-3.5" />
+                            Complete
+                          </button>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              )}
+
+              {/* RECENTLY COMPLETED TODAY */}
+              {completedTodayCount > 0 && (
+                <div className="pt-2">
+                  <h4 className="text-xs uppercase font-extrabold tracking-wider text-slate-400 mb-2">
+                    Completed Today ({completedTodayCount})
+                  </h4>
+                  <div className="flex flex-wrap gap-2">
+                    {habits.filter(h => h.completedToday).map(h => (
+                      <div key={h.id} className="flex items-center gap-2 px-3 py-1.5 rounded-xl bg-emerald-950/40 border border-emerald-500/30 text-xs text-emerald-300">
+                        <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" />
+                        <span>{h.name}</span>
+                        <span className="text-[10px] font-bold text-emerald-500">+{h.xpReward} XP</span>
+                        <button
+                          onClick={() => onDelete(h.id)}
+                          className="ml-1 text-slate-500 hover:text-rose-400 transition"
+                          title="Delete Habit"
+                        >
+                          <X className="w-3 h-3" />
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
             </div>
 
-            <div class="detail-section-title">1. Datewise Project Execution Plans</div>
-            ${p.plans.length === 0 ? '<p style="color:var(--text-muted); padding-left:15px;">No plan entries recorded.</p>' : `
-                <div class="table-responsive"><table class="db-table">
-                    <thead><tr><th style="width:20%">Date</th><th>Plan Summary Details</th></tr></thead>
-                    <tbody>${p.plans.map(l => `<tr><td><strong>${l.date}</strong></td><td>${l.text} ${buildGDriveHtmlBadges(l.attachments)}</td></tr>`).join('')}</tbody>
-                </table></div>
-            `}
+            {/* DASHBOARD CHARTS SIDE PANEL (1 COL) */}
+            <div className="space-y-6">
+              {/* WEEKLY COMPLETION BAR CHART */}
+              <div className="p-5 rounded-2xl bg-slate-900/80 border border-slate-800 space-y-4 shadow-xl">
+                <h3 className="text-sm font-bold text-slate-200 flex items-center justify-between">
+                  <span className="flex items-center gap-2">
+                    <BarChart2 className="w-4 h-4 text-amber-400" />
+                    Weekly Completion
+                  </span>
+                  <span className="text-xs text-amber-400 font-bold">{completionRate}% Today</span>
+                </h3>
 
-            <div class="detail-section-title">2. Datewise Important Decisions &amp; Executed Sub-tasks</div>
-            ${p.decisions.length === 0 ? '<p style="color:var(--text-muted); padding-left:15px;">No decision logs recorded.</p>' : `
-                <div class="table-responsive"><table class="db-table">
-                    <thead><tr><th style="width:20%">Date</th><th>Important Decisions Reached</th><th>Executed Work Context</th></tr></thead>
-                    <tbody>${p.decisions.map(l => `<tr><td><strong>${l.date}</strong></td><td>${l.decision} ${buildGDriveHtmlBadges(l.attachments)}</td><td>${l.work || 'N/A'}</td></tr>`).join('')}</tbody>
-                </table></div>
-            `}
-
-            <div class="detail-section-title">3. Datewise Engineering Bottlenecks &amp; Solutions Deployment</div>
-            ${p.problems.length === 0 ? '<p style="color:var(--text-muted); padding-left:15px;">No impediment entries recorded.</p>' : `
-                <div class="table-responsive"><table class="db-table">
-                    <thead><tr><th style="width:20%">Date</th><th>Problems / Obstacles Faced</th><th>Solutions Discussed</th><th>Solutions Implemented</th></tr></thead>
-                    <tbody>${p.problems.map(l => `<tr><td><strong>${l.date}</strong></td><td style="color:var(--danger); font-weight:600;">${l.problem} ${buildGDriveHtmlBadges(l.attachments)}</td><td>${l.discussed || 'N/A'}</td><td style="color:var(--success); font-weight:600;">${l.implemented || 'N/A'}</td></tr>`).join('')}</tbody>
-                </table></div>
-            `}
-
-            <div class="detail-section-title">4. Layout Status Matrix &amp; Committee Tracking</div>
-            ${p.layouts.length === 0 ? '<p style="color:var(--text-muted); padding-left:15px;">No engineering design notes recorded.</p>' : `
-                <div class="table-responsive"><table class="db-table">
-                    <thead><tr><th style="width:20%">Date</th><th>Draft Layout Details</th><th>Notes Sent to Layout Committee / Design</th></tr></thead>
-                    <tbody>${p.layouts.map(l => `<tr><td><strong>${l.date}</strong></td><td>${l.draft} ${buildGDriveHtmlBadges(l.attachments)}</td><td>${l.note || 'N/A'}</td></tr>`).join('')}</tbody>
-                </table></div>
-            `}
-
-            <div class="detail-section-title">5. Budget Approval Matrix</div>
-            ${p.budgets.length === 0 ? '<p style="color:var(--text-muted); padding-left:15px;">No budget entries cataloged.</p>' : `
-                <div class="table-responsive"><table class="db-table">
-                    <thead><tr><th style="width:15%">Log Date</th><th style="width:20%">Budget Type</th><th>Datewise Decisions Log</th><th style="width:15%">Receive Date</th><th style="width:15%">Amount</th></tr></thead>
-                    <tbody>${p.budgets.map(l => `<tr><td><strong>${l.date}</strong></td><td><span style="background:#fef3c7; color:#d97706; font-weight:700; padding:3px 8px; border-radius:4px; font-size:0.8rem;">${l.type || 'N/A'}</span></td><td>${l.decision} ${buildGDriveHtmlBadges(l.attachments)}</td><td>${l.recDate || 'N/A'}</td><td style="font-weight:700; color:var(--success); text-align:right;">${l.amount ? Number(l.amount).toLocaleString() : '0'}</td></tr>`).join('')}</tbody>
-                </table></div>
-            `}
-
-            <div class="detail-section-title">6. Tender Process Ledger Records</div>
-            ${p.tenders.length === 0 ? '<p style="color:var(--text-muted); padding-left:15px;">No procurement rows detected.</p>' : `
-                <div class="table-responsive"><table class="db-table">
-                    <thead><tr><th style="width:15%">Log Date</th><th style="width:15%">Tender ID</th><th>Datewise Info &amp; APP Scope Details</th><th style="width:15%">Approved Date</th><th>Winning Bidder</th><th style="width:15%">Value</th></tr></thead>
-                    <tbody>${p.tenders.map(l => `<tr><td><strong>${l.date}</strong></td><td><code>${l.tenderId}</code></td><td>${l.appInfo} ${buildGDriveHtmlBadges(l.attachments)}</td><td>${l.appDate || 'N/A'}</td><td><strong>${l.bidder || 'N/A'}</strong></td><td style="font-weight:700; color:var(--warning); text-align:right;">${l.value ? Number(l.value).toLocaleString() : '0'}</td></tr>`).join('')}</tbody>
-                </table></div>
-            `}
-
-            <div class="detail-section-title" style="color:var(--execution); border-left-color:var(--execution);">7. Physical Work Execution Phase Ledger</div>
-            ${(!p.executions || p.executions.length === 0) ? '<p style="color:var(--text-muted); padding-left:15px;">No field construction milestones logged.</p>' : `
-                <div class="table-responsive"><table class="db-table">
-                    <thead>
-                        <tr style="background:var(--bg-color);">
-                            <th style="width:15%">Log Date</th>
-                            <th style="width:20%">Work Component</th>
-                            <th>Site Progress Status &amp; Accomplishments</th>
-                            <th style="width:15%">% Complete</th>
-                            <th style="width:20%">Engineering Remarks</th>
-                        </tr>
-                    </thead>
-                    <tbody>${p.executions.map(l => `
-                        <tr>
-                            <td><strong>${l.date}</strong></td>
-                            <td style="color:var(--execution); font-weight:700;">${l.component}</td>
-                            <td>${l.progress} ${buildGDriveHtmlBadges(l.attachments)}</td>
-                            <td><span style="background:#f3e8ff; color:#7c3aed; font-weight:800; padding:4px 10px; border-radius:20px; font-size:0.82rem;">${l.percent}%</span></td>
-                            <td><i>${l.remarks || 'N/A'}</i></td>
-                        </tr>
-                    `).join('')}</tbody>
-                </table></div>
-            `}
-        `;
-
-        document.getElementById('fullDetailsRenderContainer').innerHTML = htmlContent;
-        switchView('view-full-details');
-    }
-
-    function renderMasterDatabase() {
-        const out = document.getElementById('masterDbContainer');
-        if(!out) return;
-        out.innerHTML = "";
-
-        if(database.length === 0) {
-            out.innerHTML = `<p style="text-align:center; color:var(--text-muted); padding:20px; font-weight:bold;">No project data rows found.</p>`;
-            return;
-        }
-
-        let grouped = {};
-        database.forEach(p => {
-            if(!grouped[p.fy]) grouped[p.fy] = [];
-            grouped[p.fy].push(p);
-        });
-
-        Object.keys(grouped).sort().reverse().forEach(fy => {
-            let section = document.createElement('div');
-            section.innerHTML = `<div class="year-header">Financial Year: ${fy}</div>`;
-
-            grouped[fy].forEach(p => {
-                let card = document.createElement('div');
-                card.className = 'project-card';
-                card.innerHTML = `
-                    <div class="project-summary">
-                        <div class="project-meta-info">
-                            <strong>FY:</strong> ${p.fy} | 
-                            <strong>ID:</strong> <code>${p.id}</code> | 
-                            <strong>Name:</strong> <span style="font-weight:700; color:var(--text-main); margin-left:4px;">${p.name}</span>
-                        </div>
-                        <div class="btn-group">
-                            <button class="btn btn-sm btn-success" onclick="showFullDetailsPage('${p.id}')">See Full Details</button>
-                            <button class="btn btn-sm" onclick="editEntireProjectRoute('${p.id}')">Edit / Add Logs</button>
-                            <button class="btn btn-sm btn-danger" onclick="deleteEntireProject('${p.id}')">Delete</button>
-                        </div>
+                <div className="flex items-end justify-between gap-2 h-32 pt-4 border-b border-slate-800 pb-2">
+                  {weeklyStats.map((item, idx) => (
+                    <div key={idx} className="flex-1 flex flex-col items-center gap-1 h-full justify-end">
+                      <div
+                        className="w-full bg-gradient-to-t from-amber-600 to-amber-400 rounded-t-md transition-all duration-500 hover:brightness-125"
+                        style={{ height: `${item.completed}%` }}
+                        title={`${item.day}: ${item.completed}%`}
+                      ></div>
+                      <span className="text-[10px] text-slate-400 font-medium">{item.day}</span>
                     </div>
-                `;
-                section.appendChild(card);
-            });
-            out.appendChild(section);
+                  ))}
+                </div>
+              </div>
+
+              {/* HABIT SUCCESS PIE / DONUT BREAKDOWN */}
+              <div className="p-5 rounded-2xl bg-slate-900/80 border border-slate-800 space-y-4 shadow-xl">
+                <h3 className="text-sm font-bold text-slate-200 flex items-center gap-2">
+                  <PieChart className="w-4 h-4 text-purple-400" />
+                  Daily Success Breakdown
+                </h3>
+
+                <div className="flex items-center gap-4">
+                  <div className="relative w-24 h-24 flex-shrink-0">
+                    <svg className="w-full h-full transform -rotate-90" viewBox="0 0 36 36">
+                      <path
+                        className="text-slate-800"
+                        strokeWidth="3.8"
+                        stroke="currentColor"
+                        fill="none"
+                        d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
+                      />
+                      <path
+                        className="text-emerald-400 transition-all duration-700"
+                        strokeDasharray={`${completionRate}, 100`}
+                        strokeWidth="3.8"
+                        strokeLinecap="round"
+                        stroke="currentColor"
+                        fill="none"
+                        d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
+                      />
+                    </svg>
+                    <div className="absolute inset-0 flex items-center justify-center font-bold text-xs text-slate-100">
+                      {completionRate}%
+                    </div>
+                  </div>
+
+                  <div className="space-y-1.5 text-xs">
+                    <div className="flex items-center gap-2">
+                      <span className="w-2.5 h-2.5 rounded-full bg-emerald-400"></span>
+                      <span className="text-slate-300">Completed ({completedTodayCount})</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <span className="w-2.5 h-2.5 rounded-full bg-amber-400"></span>
+                      <span className="text-slate-300">Pending ({activeQuests.length})</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <span className="w-2.5 h-2.5 rounded-full bg-slate-700"></span>
+                      <span className="text-slate-400">Total Habits ({habits.length})</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      );
+    }
+
+    // ==========================================
+    // PAGE 2: HABIT QUESTS PAGE
+    // ==========================================
+    function HabitQuestsView({ habits, onComplete, onOpenCreate, onEdit, onDelete }) {
+      const [selectedCategory, setSelectedCategory] = useState('All');
+
+      const filteredHabits = habits.filter(
+        h => selectedCategory === 'All' || h.category === selectedCategory
+      );
+
+      return (
+        <div className="space-y-6">
+          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-slate-900/80 p-4 rounded-2xl border border-slate-800">
+            <div>
+              <h2 className="text-xl font-bold font-serif text-slate-100 flex items-center gap-2">
+                <Sword className="w-5 h-5 text-amber-400" />
+                Habit Quests Board
+              </h2>
+              <p className="text-xs text-slate-400">Complete quests daily to extend your streak and gain rare loot.</p>
+            </div>
+
+            <button
+              onClick={onOpenCreate}
+              className="flex items-center gap-2 px-4 py-2 rounded-xl bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-slate-950 font-bold text-sm transition shadow-lg shadow-amber-500/20"
+            >
+              <Plus className="w-4 h-4" />
+              Create Habit Quest
+            </button>
+          </div>
+
+          <div className="flex items-center gap-2 overflow-x-auto pb-1 scrollbar-none">
+            <button
+              onClick={() => setSelectedCategory('All')}
+              className={`px-3 py-1.5 rounded-xl text-xs font-bold whitespace-nowrap transition ${
+                selectedCategory === 'All'
+                  ? 'bg-amber-400 text-slate-950'
+                  : 'bg-slate-900 text-slate-400 border border-slate-800 hover:bg-slate-800'
+              }`}
+            >
+              All Quests ({habits.length})
+            </button>
+            {HABIT_CATEGORIES.map(cat => (
+              <button
+                key={cat.id}
+                onClick={() => setSelectedCategory(cat.id)}
+                className={`px-3 py-1.5 rounded-xl text-xs font-bold whitespace-nowrap transition flex items-center gap-1.5 ${
+                  selectedCategory === cat.id
+                    ? 'bg-amber-400 text-slate-950'
+                    : 'bg-slate-900 text-slate-400 border border-slate-800 hover:bg-slate-800'
+                }`}
+              >
+                <cat.icon className="w-3.5 h-3.5" />
+                <span>{cat.name}</span>
+              </button>
+            ))}
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {filteredHabits.map(habit => {
+              const catObj = HABIT_CATEGORIES.find(c => c.id === habit.category) || HABIT_CATEGORIES[0];
+              const Icon = catObj.icon;
+
+              const nextMilestone = STREAK_MILESTONES.find(m => m > habit.currentStreak) || 40;
+              const targetReward = REWARDS_MASTER.find(r => r.streakReq === nextMilestone && (r.category === habit.category || r.category === 'General')) || REWARDS_MASTER[0];
+
+              const progressPercent = Math.min(100, (habit.currentStreak / nextMilestone) * 100);
+
+              return (
+                <div
+                  key={habit.id}
+                  className={`relative overflow-hidden rounded-2xl bg-slate-900/90 border p-5 shadow-xl flex flex-col justify-between space-y-4 transition-all duration-300 hover:border-amber-500/50 ${
+                    habit.completedToday ? 'border-emerald-500/40 bg-slate-900/50' : 'border-slate-800'
+                  }`}
+                >
+                  <div className="space-y-3">
+                    <div className="flex justify-between items-start">
+                      <div className="flex items-center gap-3">
+                        <div className={`p-2.5 rounded-xl bg-gradient-to-br ${catObj.color} text-slate-950 shadow-md`}>
+                          <Icon className="w-5 h-5" />
+                        </div>
+                        <div>
+                          <span className="text-[10px] uppercase font-extrabold tracking-wider text-slate-400">
+                            {habit.category} Quest
+                          </span>
+                          <h3 className="font-bold text-base text-slate-100 flex items-center gap-2">
+                            {habit.name}
+                          </h3>
+                        </div>
+                      </div>
+
+                      <div className="flex items-center gap-1">
+                        <button
+                          onClick={() => onEdit(habit)}
+                          className="p-1.5 rounded-lg text-slate-400 hover:text-amber-400 hover:bg-slate-800 transition"
+                          title="Edit Quest"
+                        >
+                          <Edit3 className="w-3.5 h-3.5" />
+                        </button>
+                        <button
+                          onClick={() => onDelete(habit.id)}
+                          className="p-1.5 rounded-lg text-slate-400 hover:text-rose-400 hover:bg-slate-800 transition"
+                          title="Delete Quest"
+                        >
+                          <Trash2 className="w-3.5 h-3.5" />
+                        </button>
+                      </div>
+                    </div>
+
+                    <div className="flex items-center justify-between bg-slate-950/60 p-2.5 rounded-xl border border-slate-800">
+                      <div className="flex items-center gap-1.5">
+                        <Flame className="w-4 h-4 text-amber-400 animate-pulse" />
+                        <span className="text-xs text-slate-300">Streak:</span>
+                        <span className="text-xs font-bold text-amber-400">{habit.currentStreak} Days</span>
+                      </div>
+                      <span className="text-[10px] px-2 py-0.5 rounded bg-purple-950 text-purple-300 border border-purple-800 font-bold">
+                        +{habit.xpReward} XP
+                      </span>
+                    </div>
+
+                    <div className="text-xs space-y-1.5 pt-1">
+                      <div className="flex justify-between text-[11px] text-slate-400">
+                        <span>Target Reward at {nextMilestone} Days:</span>
+                        <span className="text-amber-300 font-semibold">{targetReward.name} {targetReward.icon}</span>
+                      </div>
+
+                      <div className="w-full h-2.5 bg-slate-950 rounded-full overflow-hidden p-0.5 border border-slate-800">
+                        <div
+                          className="h-full bg-gradient-to-r from-amber-500 to-amber-300 rounded-full transition-all duration-500"
+                          style={{ width: `${progressPercent}%` }}
+                        ></div>
+                      </div>
+                      <div className="flex justify-between text-[10px] text-slate-500">
+                        <span>{habit.currentStreak} Days</span>
+                        <span>{nextMilestone} Days</span>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="pt-3 border-t border-slate-800/80 flex items-center justify-between">
+                    <span className="text-xs text-slate-400 flex items-center gap-1">
+                      <Clock className="w-3.5 h-3.5 text-slate-500" />
+                      {habit.reminderTime || 'Daily'}
+                    </span>
+
+                    {habit.completedToday ? (
+                      <span className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-emerald-950/80 text-emerald-400 text-xs font-bold border border-emerald-500/40">
+                        <CheckCircle2 className="w-4 h-4" />
+                        Completed Today
+                      </span>
+                    ) : (
+                      <button
+                        onClick={() => onComplete(habit.id)}
+                        className="flex items-center gap-1.5 px-4 py-2 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-400 hover:to-teal-500 text-slate-950 font-bold text-xs transition shadow-md shadow-emerald-500/20 active:scale-95"
+                      >
+                        <Check className="w-4 h-4" />
+                        Complete Quest
+                      </button>
+                    )}
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      );
+    }
+
+    // ==========================================
+    // PAGE 3: CALENDAR VIEW
+    // ==========================================
+    function CalendarView({ habits, onSelectDay }) {
+      const [currentMonth, setCurrentMonth] = useState(new Date(2026, 6, 1));
+
+      const daysInMonth = new Date(currentMonth.getFullYear(), currentMonth.getMonth() + 1, 0).getDate();
+      const firstDayOfWeek = new Date(currentMonth.getFullYear(), currentMonth.getMonth(), 1).getDay();
+
+      const monthName = currentMonth.toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
+
+      const calendarDays = useMemo(() => {
+        const days = [];
+        const year = currentMonth.getFullYear();
+        const month = (currentMonth.getMonth() + 1).toString().padStart(2, '0');
+
+        for (let d = 1; d <= daysInMonth; d++) {
+          const dayStr = `${year}-${month}-${d.toString().padStart(2, '0')}`;
+          
+          const completedOnDay = habits.filter(h => h.history.includes(dayStr));
+          const count = completedOnDay.length;
+
+          let status = 'none';
+          if (count === habits.length && habits.length > 0) {
+            status = 'completed';
+          } else if (count > 0) {
+            status = 'streak';
+          }
+
+          const isRewardDay = d % 7 === 0;
+
+          days.push({
+            dateNumber: d,
+            dateStr: dayStr,
+            completedCount: count,
+            totalHabits: habits.length,
+            status,
+            isRewardDay,
+            completedQuests: completedOnDay
+          });
+        }
+        return days;
+      }, [currentMonth, habits, daysInMonth]);
+
+      return (
+        <div className="space-y-6">
+          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-slate-900/80 p-5 rounded-2xl border border-slate-800">
+            <div>
+              <h2 className="text-xl font-bold font-serif text-slate-100 flex items-center gap-2">
+                <Calendar className="w-5 h-5 text-amber-400" />
+                RPG Monthly Quest Log
+              </h2>
+              <p className="text-xs text-slate-400">Track your daily habit consistency and claim milestone rewards.</p>
+            </div>
+
+            <div className="flex items-center gap-3">
+              <button
+                onClick={() => setCurrentMonth(new Date(currentMonth.getFullYear(), currentMonth.getMonth() - 1, 1))}
+                className="p-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700 transition"
+              >
+                ‹
+              </button>
+              <span className="text-sm font-bold text-amber-300 font-serif min-w-[120px] text-center">
+                {monthName}
+              </span>
+              <button
+                onClick={() => setCurrentMonth(new Date(currentMonth.getFullYear(), currentMonth.getMonth() + 1, 1))}
+                className="p-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700 transition"
+              >
+                ›
+              </button>
+            </div>
+          </div>
+
+          <div className="flex flex-wrap items-center gap-4 text-xs bg-slate-900/50 p-3 rounded-xl border border-slate-800">
+            <span className="flex items-center gap-1.5 text-emerald-400 font-medium">
+              <span>✅</span> Completed All
+            </span>
+            <span className="flex items-center gap-1.5 text-amber-400 font-medium">
+              <span>🔥</span> Partial Streak
+            </span>
+            <span className="flex items-center gap-1.5 text-purple-400 font-medium">
+              <span>🏆</span> Reward Day
+            </span>
+          </div>
+
+          <div className="p-4 rounded-2xl bg-slate-900/90 border border-slate-800 shadow-xl">
+            <div className="grid grid-cols-7 gap-2 text-center text-xs font-bold text-slate-400 pb-3 border-b border-slate-800">
+              <div>Sun</div>
+              <div>Mon</div>
+              <div>Tue</div>
+              <div>Wed</div>
+              <div>Thu</div>
+              <div>Fri</div>
+              <div>Sat</div>
+            </div>
+
+            <div className="grid grid-cols-7 gap-2 pt-3">
+              {Array.from({ length: firstDayOfWeek }).map((_, idx) => (
+                <div key={`empty-${idx}`} className="h-16 sm:h-20 rounded-xl bg-slate-950/30"></div>
+              ))}
+
+              {calendarDays.map(day => (
+                <div
+                  key={day.dateStr}
+                  onClick={() => onSelectDay(day)}
+                  className={`h-16 sm:h-20 rounded-xl p-1.5 border transition cursor-pointer flex flex-col justify-between hover:scale-[1.03] ${
+                    day.status === 'completed'
+                      ? 'bg-emerald-950/40 border-emerald-500/50 hover:bg-emerald-900/50'
+                      : day.status === 'streak'
+                      ? 'bg-amber-950/40 border-amber-500/40 hover:bg-amber-900/50'
+                      : 'bg-slate-950/60 border-slate-800/80 hover:border-slate-700'
+                  }`}
+                >
+                  <div className="flex justify-between items-center text-xs">
+                    <span className="font-bold text-slate-300">{day.dateNumber}</span>
+                    {day.isRewardDay && <span className="text-xs">🏆</span>}
+                  </div>
+
+                  <div className="text-center my-auto text-sm">
+                    {day.status === 'completed' && <span>✅</span>}
+                    {day.status === 'streak' && <span>🔥</span>}
+                  </div>
+
+                  <div className="text-[9px] text-center text-slate-400 font-mono">
+                    {day.completedCount}/{day.totalHabits} Quests
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      );
+    }
+
+    // ==========================================
+    // PAGE 4: CHARACTER SCREEN
+    // ==========================================
+    function CharacterView({ user, characterStats, currentRank, onOpenEditProfile }) {
+      const slots = [
+        { key: 'weapon', name: 'Weapon', icon: '⚔️' },
+        { key: 'armor', name: 'Armor', icon: '🛡️' },
+        { key: 'pet', name: 'Pet / Companion', icon: '🐾' },
+        { key: 'artifact', name: 'Artifact', icon: '🔮' }
+      ];
+
+      return (
+        <div className="space-y-6">
+          <div className="bg-slate-900/80 p-5 rounded-2xl border border-slate-800 flex justify-between items-center">
+            <div>
+              <h2 className="text-xl font-bold font-serif text-slate-100 flex items-center gap-2">
+                <User className="w-5 h-5 text-amber-400" />
+                Hero Profile & Stats
+              </h2>
+              <p className="text-xs text-slate-400">View your character rank, equipped artifacts, and habit RPG attributes.</p>
+            </div>
+            <button
+              onClick={onOpenEditProfile}
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-amber-400 text-slate-950 text-xs font-bold hover:bg-amber-300 transition"
+            >
+              <Edit3 className="w-3.5 h-3.5" /> Edit Knight
+            </button>
+          </div>
+
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+
+            {/* CHARACTER AVATAR DISPLAY */}
+            <div className="p-6 rounded-3xl bg-gradient-to-b from-slate-900 via-slate-900 to-purple-950/50 border border-amber-500/30 text-center space-y-4 shadow-2xl relative overflow-hidden">
+              <div className="absolute top-0 right-0 w-64 h-64 bg-amber-500/10 rounded-full blur-3xl pointer-events-none"></div>
+
+              <div className="relative w-36 h-36 mx-auto rounded-3xl bg-slate-950 border-2 border-amber-400 shadow-2xl shadow-amber-500/20 overflow-hidden flex items-center justify-center text-6xl">
+                {user.avatar ? (
+                  <img src={user.avatar} alt="Knight Avatar" className="w-full h-full object-cover" />
+                ) : (
+                  <span>🛡️</span>
+                )}
+                <button
+                  onClick={onOpenEditProfile}
+                  className="absolute bottom-1 right-1 p-2 rounded-full bg-amber-400 text-slate-950 shadow hover:scale-110 transition"
+                  title="Change Photo"
+                >
+                  <Camera className="w-4 h-4" />
+                </button>
+              </div>
+
+              <div>
+                <span className={`text-xs uppercase font-extrabold tracking-widest bg-gradient-to-r ${currentRank.color} bg-clip-text text-transparent`}>
+                  {currentRank.title} Rank
+                </span>
+                <h3 className="text-2xl font-bold font-serif text-slate-100 mt-1">{user.name || 'Sir Questalot'}</h3>
+                <p className="text-xs text-amber-400 font-bold mt-1">Total Streak: {user.totalStreak} Days 🔥</p>
+              </div>
+
+              <div className="pt-4 border-t border-slate-800 space-y-2">
+                <h4 className="text-xs font-bold uppercase text-slate-400 tracking-wider">Equipped Loadout</h4>
+                <div className="grid grid-cols-2 gap-2">
+                  {slots.map(s => {
+                    const itemId = user.equipped[s.key];
+                    const item = REWARDS_MASTER.find(r => r.id === itemId);
+                    return (
+                      <div key={s.key} className="p-2 rounded-xl bg-slate-950/80 border border-slate-800 flex items-center gap-2 text-left">
+                        <span className="text-xl">{item ? item.icon : s.icon}</span>
+                        <div className="overflow-hidden">
+                          <div className="text-[10px] text-slate-500 capitalize">{s.name}</div>
+                          <div className="text-xs font-bold text-slate-200 truncate">{item ? item.name : 'Empty'}</div>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+            </div>
+
+            {/* STATS BREAKDOWN & RPG ATTRIBUTES */}
+            <div className="lg:col-span-2 space-y-6">
+              <div className="p-6 rounded-3xl bg-slate-900/90 border border-slate-800 shadow-xl space-y-6">
+                <h3 className="text-lg font-bold font-serif text-slate-100 flex items-center justify-between">
+                  <span>RPG Attributes</span>
+                  <span className="text-xs text-amber-400 font-normal">Boosted by Completed Habits & Gear</span>
+                </h3>
+
+                <div className="space-y-4">
+                  {[
+                    { label: 'Strength', val: characterStats.strength, max: 150, color: 'from-amber-500 to-red-500', desc: 'Driven by Fitness & Exercise habits' },
+                    { label: 'Knowledge', val: characterStats.knowledge, max: 150, color: 'from-blue-500 to-indigo-500', desc: 'Driven by Reading & Language learning' },
+                    { label: 'Focus', val: characterStats.focus, max: 150, color: 'from-purple-500 to-pink-500', desc: 'Driven by Coding & Meditation practices' },
+                    { label: 'Discipline', val: characterStats.discipline, max: 150, color: 'from-emerald-400 to-teal-500', desc: 'Driven by overall habit consistency & streak length' }
+                  ].map(st => (
+                    <div key={st.label} className="space-y-1.5">
+                      <div className="flex justify-between items-center text-xs">
+                        <span className="font-bold text-slate-200">{st.label}</span>
+                        <span className="font-bold text-amber-400">{st.val} / {st.max}</span>
+                      </div>
+                      <div className="w-full h-3 bg-slate-950 rounded-full overflow-hidden p-0.5 border border-slate-800">
+                        <div
+                          className={`h-full rounded-full bg-gradient-to-r ${st.color} transition-all duration-500`}
+                          style={{ width: `${Math.min(100, (st.val / st.max) * 100)}%` }}
+                        ></div>
+                      </div>
+                      <p className="text-[10px] text-slate-500">{st.desc}</p>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              <div className="p-6 rounded-3xl bg-slate-900/90 border border-slate-800 shadow-xl space-y-4">
+                <h3 className="text-sm font-bold font-serif text-slate-200">
+                  Rank Progression System
+                </h3>
+                <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 text-center text-xs">
+                  {[
+                    { days: '1-2 Days', rank: 'Recruit' },
+                    { days: '3 Days', rank: 'Adventurer' },
+                    { days: '7 Days', rank: 'Warrior' },
+                    { days: '15 Days', rank: 'Knight' },
+                    { days: '21 Days', rank: 'Champion' },
+                    { days: '30 Days', rank: 'Hero' },
+                    { days: '40+ Days', rank: 'Legend' }
+                  ].map(r => (
+                    <div key={r.rank} className={`p-2.5 rounded-xl border ${user.totalStreak >= parseInt(r.days) ? 'bg-amber-950/30 border-amber-500/40 text-amber-300' : 'bg-slate-950/40 border-slate-800 text-slate-500'}`}>
+                      <div className="font-bold">{r.rank}</div>
+                      <div className="text-[10px] opacity-80">{r.days}</div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      );
+    }
+
+    // ==========================================
+    // PAGE 5: REWARDS INVENTORY
+    // ==========================================
+    function InventoryView({ user, onEquip, onInspectItem }) {
+      const [selectedType, setSelectedType] = useState('All');
+      const [selectedRarity, setSelectedRarity] = useState('All');
+
+      const filteredItems = REWARDS_MASTER.filter(item => {
+        if (selectedType !== 'All' && item.type !== selectedType) return false;
+        if (selectedRarity !== 'All' && item.rarity !== selectedRarity) return false;
+        return true;
+      });
+
+      return (
+        <div className="space-y-6">
+          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-slate-900/80 p-5 rounded-2xl border border-slate-800">
+            <div>
+              <h2 className="text-xl font-bold font-serif text-slate-100 flex items-center gap-2">
+                <Package className="w-5 h-5 text-amber-400" />
+                Rewards Vault & Loot Inventory
+              </h2>
+              <p className="text-xs text-slate-400">Unlock gear, pets, and weapons by maintaining long habit streaks.</p>
+            </div>
+
+            <div className="text-xs bg-slate-950 px-3 py-1.5 rounded-xl border border-slate-800 text-slate-300">
+              Unlocked: <strong className="text-amber-400">{user.unlockedItemIds.length}</strong> / {REWARDS_MASTER.length} Items
+            </div>
+          </div>
+
+          <div className="flex flex-wrap items-center justify-between gap-3">
+            <div className="flex items-center gap-2 overflow-x-auto pb-1 scrollbar-none">
+              {['All', 'weapon', 'armor', 'pet', 'artifact'].map(t => (
+                <button
+                  key={t}
+                  onClick={() => setSelectedType(t)}
+                  className={`px-3 py-1.5 rounded-xl text-xs font-bold capitalize transition ${
+                    selectedType === t
+                      ? 'bg-amber-400 text-slate-950'
+                      : 'bg-slate-900 text-slate-400 border border-slate-800 hover:bg-slate-800'
+                  }`}
+                >
+                  {t}s
+                </button>
+              ))}
+            </div>
+
+            <div className="flex items-center gap-2 overflow-x-auto pb-1 scrollbar-none">
+              {['All', 'Common', 'Rare', 'Epic', 'Legendary', 'Mythic'].map(r => (
+                <button
+                  key={r}
+                  onClick={() => setSelectedRarity(r)}
+                  className={`px-3 py-1.5 rounded-xl text-xs font-bold transition ${
+                    selectedRarity === r
+                      ? 'bg-purple-500 text-slate-950'
+                      : 'bg-slate-900 text-slate-400 border border-slate-800 hover:bg-slate-800'
+                  }`}
+                >
+                  {r}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
+            {filteredItems.map(item => {
+              const isUnlocked = user.unlockedItemIds.includes(item.id);
+              const isEquipped = Object.values(user.equipped).includes(item.id);
+              const rarityStyling = RARITY_COLORS[item.rarity] || RARITY_COLORS.Common;
+
+              return (
+                <div
+                  key={item.id}
+                  onClick={() => onInspectItem(item)}
+                  className={`relative rounded-2xl p-4 border transition-all cursor-pointer flex flex-col items-center justify-between text-center space-y-3 group ${
+                    isUnlocked
+                      ? `${rarityStyling.bg} ${rarityStyling.border} shadow-lg hover:scale-105`
+                      : 'bg-slate-950/60 border-slate-800/80 opacity-60'
+                  }`}
+                >
+                  {isEquipped && (
+                    <span className="absolute top-2 right-2 px-2 py-0.5 rounded-md bg-amber-400 text-slate-950 font-black text-[9px] shadow">
+                      EQUIPPED
+                    </span>
+                  )}
+
+                  <div className="relative text-4xl py-2">
+                    {item.icon}
+                    {!isUnlocked && (
+                      <div className="absolute inset-0 flex items-center justify-center bg-slate-950/70 rounded-full">
+                        <Lock className="w-5 h-5 text-slate-400" />
+                      </div>
+                    )}
+                  </div>
+
+                  <div className="w-full space-y-1">
+                    <span className={`text-[10px] uppercase font-bold tracking-wider ${rarityStyling.text}`}>
+                      {item.rarity}
+                    </span>
+                    <h4 className="text-xs font-bold text-slate-200 truncate group-hover:text-amber-300">
+                      {item.name}
+                    </h4>
+                    <p className="text-[10px] text-slate-400">
+                      {isUnlocked ? `${item.category} Loot` : `Requires ${item.streakReq}-Day Streak`}
+                    </p>
+                  </div>
+
+                  {isUnlocked && (
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        onEquip(item);
+                      }}
+                      className={`w-full py-1.5 rounded-xl text-xs font-bold transition ${
+                        isEquipped
+                          ? 'bg-slate-800 text-slate-400 hover:bg-slate-700'
+                          : 'bg-amber-400 hover:bg-amber-300 text-slate-950 shadow-md shadow-amber-500/20'
+                      }`}
+                    >
+                      {isEquipped ? 'Unequip' : 'Equip'}
+                    </button>
+                  )}
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      );
+    }
+
+    // ==========================================
+    // PAGE 6: PROGRESS CENTER
+    // ==========================================
+    function ProgressCenterView({ habits, unlockedItemIds }) {
+      const [selectedHabitId, setSelectedHabitId] = useState(habits[0]?.id || null);
+
+      const habit = habits.find(h => h.id === selectedHabitId) || habits[0];
+
+      return (
+        <div className="space-y-6">
+          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-slate-900/80 p-5 rounded-2xl border border-slate-800">
+            <div>
+              <h2 className="text-xl font-bold font-serif text-slate-100 flex items-center gap-2">
+                <Trophy className="w-5 h-5 text-amber-400" />
+                Streak Progress Timeline
+              </h2>
+              <p className="text-xs text-slate-400">Visual path of milestone rewards unlocked by daily habit streaks.</p>
+            </div>
+
+            <select
+              value={selectedHabitId}
+              onChange={(e) => setSelectedHabitId(e.target.value)}
+              className="bg-slate-950 border border-slate-700 text-slate-200 text-xs rounded-xl px-3 py-2 font-semibold focus:outline-none focus:border-amber-400"
+            >
+              {habits.map(h => (
+                <option key={h.id} value={h.id}>{h.name} ({h.currentStreak} Days)</option>
+              ))}
+            </select>
+          </div>
+
+          {habit && (
+            <div className="p-6 rounded-3xl bg-slate-900/90 border border-slate-800 shadow-2xl space-y-8">
+              <div className="flex justify-between items-center bg-slate-950/60 p-4 rounded-2xl border border-slate-800">
+                <div>
+                  <span className="text-xs text-slate-400">Active Quest Timeline</span>
+                  <h3 className="text-lg font-bold text-slate-100">{habit.name}</h3>
+                </div>
+                <div className="text-right">
+                  <span className="text-xs text-slate-400">Current Streak</span>
+                  <div className="text-xl font-extrabold text-amber-400">{habit.currentStreak} Days 🔥</div>
+                </div>
+              </div>
+
+              <div className="space-y-6">
+                <h4 className="text-xs font-bold uppercase tracking-wider text-slate-400">Milestone Rewards Path</h4>
+
+                <div className="relative border-l-2 border-amber-500/30 pl-6 sm:pl-8 space-y-8 ml-4">
+                  {STREAK_MILESTONES.map(milestone => {
+                    const rewardItem = REWARDS_MASTER.find(
+                      r => r.streakReq === milestone && (r.category === habit.category || r.category === 'General')
+                    ) || REWARDS_MASTER[0];
+
+                    const isReached = habit.currentStreak >= milestone;
+
+                    return (
+                      <div key={milestone} className="relative group">
+                        <div
+                          className={`absolute -left-[31px] sm:-left-[39px] top-1/2 -translate-y-1/2 w-8 h-8 rounded-full border-2 flex items-center justify-center font-bold text-xs transition-all ${
+                            isReached
+                              ? 'bg-amber-400 border-amber-300 text-slate-950 shadow-lg shadow-amber-500/40'
+                              : 'bg-slate-950 border-slate-700 text-slate-500'
+                          }`}
+                        >
+                          {isReached ? '✓' : milestone}
+                        </div>
+
+                        <div
+                          className={`p-4 rounded-2xl border transition-all flex items-center justify-between gap-4 ${
+                            isReached
+                              ? 'bg-slate-900 border-amber-500/40 shadow-xl'
+                              : 'bg-slate-950/40 border-slate-800/80 opacity-60'
+                          }`}
+                        >
+                          <div className="flex items-center gap-4">
+                            <div className="text-3xl">{rewardItem.icon}</div>
+                            <div>
+                              <div className="flex items-center gap-2">
+                                <span className="text-xs font-extrabold text-amber-400">{milestone}-Day Milestone</span>
+                                <span className="text-[10px] px-2 py-0.5 rounded bg-slate-800 text-slate-300 border border-slate-700">
+                                  {rewardItem.rarity}
+                                </span>
+                              </div>
+                              <h5 className="font-bold text-sm text-slate-100">{rewardItem.name}</h5>
+                              <p className="text-xs text-slate-400 max-w-md">{rewardItem.desc}</p>
+                            </div>
+                          </div>
+
+                          <div>
+                            {isReached ? (
+                              <span className="px-3 py-1.5 rounded-xl bg-emerald-950 border border-emerald-500/40 text-emerald-400 text-xs font-bold flex items-center gap-1">
+                                <Check className="w-3.5 h-3.5" /> Unlocked
+                              </span>
+                            ) : (
+                              <span className="px-3 py-1.5 rounded-xl bg-slate-950 text-slate-500 text-xs font-bold border border-slate-800 flex items-center gap-1">
+                                <Lock className="w-3.5 h-3.5" /> Locked
+                              </span>
+                            )}
+                          </div>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+            </div>
+          )}
+        </div>
+      );
+    }
+
+    // ==========================================
+    // PAGE 7: REMINDER CENTER
+    // ==========================================
+    function ReminderCenterView({ habits, onComplete }) {
+      return (
+        <div className="space-y-6">
+          <div className="bg-slate-900/80 p-5 rounded-2xl border border-slate-800">
+            <h2 className="text-xl font-bold font-serif text-slate-100 flex items-center gap-2">
+              <Bell className="w-5 h-5 text-amber-400" />
+              Smart Quest Reminder Center
+            </h2>
+            <p className="text-xs text-slate-400">Deadlines, upcoming habit timers, and persistent quest notifications.</p>
+          </div>
+
+          <div className="p-4 rounded-2xl bg-gradient-to-r from-amber-500/20 via-amber-600/10 to-slate-900 border border-amber-500/50 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 shadow-xl">
+            <div className="flex items-center gap-3">
+              <div className="p-3 rounded-xl bg-amber-500 text-slate-950 font-bold">
+                <AlertTriangle className="w-6 h-6" />
+              </div>
+              <div>
+                <h4 className="font-bold text-slate-100 text-sm">⚠️ Workout Quest Pending!</h4>
+                <p className="text-xs text-slate-300">Reward at 15 Days: <strong className="text-amber-300">Shadow Blade 🗡️</strong></p>
+              </div>
+            </div>
+
+            <button
+              onClick={() => onComplete(habits[0]?.id)}
+              className="px-4 py-2 rounded-xl bg-amber-400 hover:bg-amber-300 text-slate-950 font-bold text-xs transition shadow-md shadow-amber-500/20 whitespace-nowrap"
+            >
+              Complete Quest Now
+            </button>
+          </div>
+
+          <div className="space-y-4">
+            <h3 className="text-sm font-bold uppercase tracking-wider text-slate-400">Scheduled Daily Reminders</h3>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {habits.map(habit => (
+                <div
+                  key={habit.id}
+                  className="p-4 rounded-2xl bg-slate-900/90 border border-slate-800 flex items-center justify-between gap-4 shadow-lg"
+                >
+                  <div className="flex items-center gap-3">
+                    <div className="p-2.5 rounded-xl bg-slate-800 text-amber-400">
+                      <Clock className="w-5 h-5" />
+                    </div>
+                    <div>
+                      <h4 className="font-bold text-sm text-slate-200">{habit.name}</h4>
+                      <p className="text-xs text-slate-400">Scheduled for <strong className="text-amber-300">{habit.reminderTime || '09:00 AM'}</strong></p>
+                    </div>
+                  </div>
+
+                  <div className="flex items-center gap-2">
+                    <button
+                      onClick={() => alert(`Snoozed ${habit.name} for 1 Hour.`)}
+                      className="px-3 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-bold transition"
+                    >
+                      Snooze
+                    </button>
+                    {habit.completedToday ? (
+                      <span className="text-xs text-emerald-400 font-bold">Done ✅</span>
+                    ) : (
+                      <button
+                        onClick={() => onComplete(habit.id)}
+                        className="px-3 py-1.5 rounded-xl bg-emerald-500 text-slate-950 text-xs font-bold transition hover:bg-emerald-400"
+                      >
+                        Done
+                      </button>
+                    )}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      );
+    }
+
+    // ==========================================
+    // PAGE 8: ANALYTICS
+    // ==========================================
+    function AnalyticsView({ habits, user }) {
+      const heatmapCells = useMemo(() => {
+        const cells = [];
+        for (let i = 0; i < 120; i++) {
+          const level = Math.floor(Math.random() * 4);
+          cells.push({ id: i, intensity: level });
+        }
+        return cells;
+      }, []);
+
+      return (
+        <div className="space-y-6">
+          <div className="bg-slate-900/80 p-5 rounded-2xl border border-slate-800">
+            <h2 className="text-xl font-bold font-serif text-slate-100 flex items-center gap-2">
+              <BarChart2 className="w-5 h-5 text-amber-400" />
+              Advanced RPG Habit Analytics
+            </h2>
+            <p className="text-xs text-slate-400">Consistency heatmap, streak metrics, and habit ranking tier list.</p>
+          </div>
+
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+            <div className="p-4 rounded-2xl bg-slate-900/90 border border-slate-800 text-center space-y-1">
+              <div className="text-xs text-slate-400">Highest Streak</div>
+              <div className="text-2xl font-extrabold text-amber-400">{user.totalStreak} Days 🔥</div>
+            </div>
+            <div className="p-4 rounded-2xl bg-slate-900/90 border border-slate-800 text-center space-y-1">
+              <div className="text-xs text-slate-400">Average Streak</div>
+              <div className="text-2xl font-extrabold text-blue-400">0.0 Days</div>
+            </div>
+            <div className="p-4 rounded-2xl bg-slate-900/90 border border-slate-800 text-center space-y-1">
+              <div className="text-xs text-slate-400">Monthly Completion</div>
+              <div className="text-2xl font-extrabold text-emerald-400">0%</div>
+            </div>
+            <div className="p-4 rounded-2xl bg-slate-900/90 border border-slate-800 text-center space-y-1">
+              <div className="text-xs text-slate-400">Quests Finished</div>
+              <div className="text-2xl font-extrabold text-purple-400">0 Quests</div>
+            </div>
+          </div>
+
+          <div className="p-6 rounded-3xl bg-slate-900/90 border border-slate-800 space-y-4 shadow-xl">
+            <h3 className="text-sm font-bold text-slate-200 flex items-center justify-between">
+              <span>Annual Consistency Grid</span>
+              <span className="text-xs text-slate-400 font-normal">Multi-Month Activity</span>
+            </h3>
+
+            <div className="flex flex-wrap gap-1.5 justify-center py-2">
+              {heatmapCells.map(cell => {
+                const colors = ['bg-slate-950 border-slate-800', 'bg-emerald-950 border-emerald-800', 'bg-emerald-700 border-emerald-600', 'bg-emerald-400 border-emerald-300'];
+                return (
+                  <div
+                    key={cell.id}
+                    className={`w-3.5 h-3.5 rounded-sm border ${colors[cell.intensity]} transition hover:scale-125`}
+                    title={`Activity Level ${cell.intensity}`}
+                  ></div>
+                );
+              })}
+            </div>
+
+            <div className="flex items-center justify-end gap-2 text-[10px] text-slate-400 pt-2">
+              <span>Less</span>
+              <span className="w-3 h-3 bg-slate-950 border border-slate-800 rounded"></span>
+              <span className="w-3 h-3 bg-emerald-950 border border-emerald-800 rounded"></span>
+              <span className="w-3 h-3 bg-emerald-700 border border-emerald-600 rounded"></span>
+              <span className="w-3 h-3 bg-emerald-400 border border-emerald-300 rounded"></span>
+              <span>More</span>
+            </div>
+          </div>
+
+          <div className="p-6 rounded-3xl bg-slate-900/90 border border-slate-800 space-y-4 shadow-xl">
+            <h3 className="text-sm font-bold text-slate-200">Habit Consistency Rankings</h3>
+
+            <div className="space-y-3">
+              {habits.slice().sort((a,b) => b.currentStreak - a.currentStreak).map((habit, idx) => (
+                <div key={habit.id} className="p-3.5 rounded-2xl bg-slate-950/60 border border-slate-800 flex items-center justify-between">
+                  <div className="flex items-center gap-3">
+                    <span className="font-extrabold text-amber-400 text-sm">#{idx + 1}</span>
+                    <span className="font-bold text-slate-200 text-sm">{habit.name}</span>
+                  </div>
+                  <div className="flex items-center gap-3">
+                    <span className="text-xs text-slate-400">{habit.category}</span>
+                    <span className="text-xs font-bold text-amber-400">{habit.currentStreak} Days 🔥</span>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      );
+    }
+
+    // ==========================================
+    // MODAL COMPONENTS
+    // ==========================================
+
+    function EditProfileModal({ user, onSave, onClose }) {
+      const [name, setName] = useState(user.name || 'Sir Questalot');
+      const [avatar, setAvatar] = useState(user.avatar || null);
+
+      const handleFileChange = (e) => {
+        const file = e.target.files[0];
+        if (file) {
+          const reader = new FileReader();
+          reader.onloadend = () => {
+            setAvatar(reader.result);
+          };
+          reader.readAsDataURL(file);
+        }
+      };
+
+      const handleSubmit = (e) => {
+        e.preventDefault();
+        onSave({ name, avatar });
+        onClose();
+      };
+
+      return (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-md">
+          <div className="relative w-full max-w-md rounded-3xl bg-slate-900 border border-amber-500/40 p-6 shadow-2xl space-y-5">
+            <button onClick={onClose} className="absolute top-4 right-4 text-slate-400 hover:text-slate-100">
+              <X className="w-5 h-5" />
+            </button>
+
+            <h3 className="text-lg font-bold font-serif text-amber-400 flex items-center gap-2">
+              <User className="w-5 h-5" /> Customize Knight Profile
+            </h3>
+
+            <form onSubmit={handleSubmit} className="space-y-4 text-xs">
+              <div>
+                <label className="block text-slate-300 font-bold mb-1">Knight Name</label>
+                <input
+                  type="text"
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
+                  placeholder="e.g. Sir Lancelot"
+                  className="w-full bg-slate-950 border border-slate-700 text-slate-100 rounded-xl px-3 py-2.5 focus:outline-none focus:border-amber-400 text-sm"
+                  required
+                />
+              </div>
+
+              <div>
+                <label className="block text-slate-300 font-bold mb-2">Avatar Photo</label>
+                <div className="flex items-center gap-4">
+                  <div className="w-16 h-16 rounded-2xl bg-slate-950 border border-slate-700 flex items-center justify-center overflow-hidden text-2xl flex-shrink-0">
+                    {avatar ? <img src={avatar} className="w-full h-full object-cover" /> : <span>🛡️</span>}
+                  </div>
+                  
+                  <div className="space-y-1">
+                    <input
+                      type="file"
+                      accept="image/*"
+                      onChange={handleFileChange}
+                      className="text-xs text-slate-400 file:mr-2 file:py-1.5 file:px-3 file:rounded-xl file:border-0 file:text-xs file:font-semibold file:bg-amber-500 file:text-slate-950 hover:file:bg-amber-400 cursor-pointer"
+                    />
+                    {avatar && (
+                      <button
+                        type="button"
+                        onClick={() => setAvatar(null)}
+                        className="block text-[11px] text-rose-400 hover:underline pt-1"
+                      >
+                        Remove custom photo
+                      </button>
+                    )}
+                  </div>
+                </div>
+              </div>
+
+              <button
+                type="submit"
+                className="w-full py-3 rounded-xl bg-gradient-to-r from-amber-500 to-amber-600 text-slate-950 font-extrabold text-sm shadow-lg hover:from-amber-400 transition"
+              >
+                Save Knight Profile
+              </button>
+            </form>
+          </div>
+        </div>
+      );
+    }
+
+    function CreateHabitModal({ habitToEdit, onSave, onClose }) {
+      const [name, setName] = useState(habitToEdit?.name || '');
+      const [category, setCategory] = useState(habitToEdit?.category || 'Fitness');
+      const [difficulty, setDifficulty] = useState(habitToEdit?.difficulty || 'Rare');
+      const [reminderTime, setReminderTime] = useState(habitToEdit?.reminderTime || '09:00');
+      const [xpReward, setXpReward] = useState(habitToEdit?.xpReward || 35);
+      const [goldReward, setGoldReward] = useState(habitToEdit?.goldReward || 15);
+
+      const handleSubmit = (e) => {
+        e.preventDefault();
+        if (!name.trim()) return;
+        onSave({
+          name,
+          category,
+          difficulty,
+          reminderTime,
+          xpReward: parseInt(xpReward),
+          goldReward: parseInt(goldReward)
         });
+      };
+
+      return (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-md">
+          <div className="relative w-full max-w-md rounded-3xl bg-slate-900 border border-amber-500/40 p-6 shadow-2xl space-y-5">
+            <button onClick={onClose} className="absolute top-4 right-4 text-slate-400 hover:text-slate-100">
+              <X className="w-5 h-5" />
+            </button>
+
+            <h3 className="text-lg font-bold font-serif text-amber-400 flex items-center gap-2">
+              <Sword className="w-5 h-5" />
+              {habitToEdit ? 'Edit Habit Quest' : 'Forge New Habit Quest'}
+            </h3>
+
+            <form onSubmit={handleSubmit} className="space-y-4 text-xs">
+              <div>
+                <label className="block text-slate-300 font-bold mb-1">Quest Name</label>
+                <input
+                  type="text"
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
+                  placeholder="e.g. Morning Workout ⚔️"
+                  className="w-full bg-slate-950 border border-slate-700 text-slate-100 rounded-xl px-3 py-2.5 focus:outline-none focus:border-amber-400"
+                  required
+                />
+              </div>
+
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="block text-slate-300 font-bold mb-1">Category</label>
+                  <select
+                    value={category}
+                    onChange={(e) => setCategory(e.target.value)}
+                    className="w-full bg-slate-950 border border-slate-700 text-slate-100 rounded-xl px-3 py-2.5"
+                  >
+                    {HABIT_CATEGORIES.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
+                  </select>
+                </div>
+
+                <div>
+                  <label className="block text-slate-300 font-bold mb-1">Difficulty</label>
+                  <select
+                    value={difficulty}
+                    onChange={(e) => setDifficulty(e.target.value)}
+                    className="w-full bg-slate-950 border border-slate-700 text-slate-100 rounded-xl px-3 py-2.5"
+                  >
+                    <option value="Common">Common</option>
+                    <option value="Rare">Rare</option>
+                    <option value="Epic">Epic</option>
+                    <option value="Legendary">Legendary</option>
+                  </select>
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-slate-300 font-bold mb-1">Reminder Time</label>
+                <input
+                  type="time"
+                  value={reminderTime}
+                  onChange={(e) => setReminderTime(e.target.value)}
+                  className="w-full bg-slate-950 border border-slate-700 text-slate-100 rounded-xl px-3 py-2.5"
+                />
+              </div>
+
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="block text-slate-300 font-bold mb-1">XP Gain</label>
+                  <input
+                    type="number"
+                    value={xpReward}
+                    onChange={(e) => setXpReward(e.target.value)}
+                    className="w-full bg-slate-950 border border-slate-700 text-slate-100 rounded-xl px-3 py-2.5"
+                  />
+                </div>
+                <div>
+                  <label className="block text-slate-300 font-bold mb-1">Gold Gain</label>
+                  <input
+                    type="number"
+                    value={goldReward}
+                    onChange={(e) => setGoldReward(e.target.value)}
+                    className="w-full bg-slate-950 border border-slate-700 text-slate-100 rounded-xl px-3 py-2.5"
+                  />
+                </div>
+              </div>
+
+              <button
+                type="submit"
+                className="w-full py-3 rounded-xl bg-gradient-to-r from-amber-500 to-amber-600 text-slate-950 font-extrabold text-sm shadow-lg shadow-amber-500/20 hover:from-amber-400 hover:to-amber-500 transition mt-2"
+              >
+                {habitToEdit ? 'Save Quest Changes' : 'Forge Quest'}
+              </button>
+            </form>
+          </div>
+        </div>
+      );
     }
 
-    function exportDataToCSV() {
-        if(database.length === 0) return alert("No data to export.");
-        let csvRows = [];
-        csvRows.push("RecordType,ProjectID,FY,ProjectName,Details,Date,Field1,Field2,Field3,Field4,Field5,Field6");
+    function LootRevealModal({ item, onClose, onEquip }) {
+      const rarityStyle = RARITY_COLORS[item.rarity] || RARITY_COLORS.Legendary;
 
-        database.forEach(p => {
-            csvRows.push(`METADATA,"${p.id}","${p.fy}","${p.name.replace(/"/g, '""')}","${(p.details || '').replace(/"/g, '""')}",,,,,,,`);
-            if(p.metaLinks) p.metaLinks.forEach(l => csvRows.push(`GDRIVE_META,"${p.id}",,,,"${l.name}","${l.link}",,,,,`));
-            if(p.plans) p.plans.forEach(l => csvRows.push(`PLAN,"${p.id}",,,,"${l.date}","${l.text.replace(/"/g, '""')}",,,,,`));
-            if(p.decisions) p.decisions.forEach(l => csvRows.push(`DECISION,"${p.id}",,,,"${l.date}","${l.decision.replace(/"/g, '""')}","${l.work.replace(/"/g, '""')}",,,,`));
-            if(p.problems) p.problems.forEach(l => csvRows.push(`PROBLEM,"${p.id}",,,,"${l.date}","${l.problem.replace(/"/g, '""')}","${l.discussed.replace(/"/g, '""')}","${l.implemented.replace(/"/g, '""')}",,,`));
-            if(p.layouts) p.layouts.forEach(l => csvRows.push(`LAYOUT,"${p.id}",,,,"${l.date}","${l.draft.replace(/"/g, '""')}","${l.note.replace(/"/g, '""')}",,,,`));
-            if(p.budgets) p.budgets.forEach(l => csvRows.push(`BUDGET,"${p.id}",,,,"${l.date}","${l.type}","${l.decision.replace(/"/g, '""')}","${l.recDate}","${l.amount}",,`));
-            if(p.tenders) p.tenders.forEach(l => csvRows.push(`TENDER,"${p.id}",,,,"${l.date}","${l.tenderId}","${l.appInfo.replace(/"/g, '""')}","${l.appDate}","${(l.bidder || '').replace(/"/g, '""')}","${l.value}"`));
-            if(p.executions) p.executions.forEach(l => csvRows.push(`EXECUTION,"${p.id}",,,,"${l.date}","${l.component.replace(/"/g, '""')}","${l.progress.replace(/"/g, '""')}","${l.percent}","${l.remarks.replace(/"/g, '""')}",`));
-        });
+      return (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/90 backdrop-blur-lg">
+          <div className={`relative w-full max-w-sm rounded-3xl ${rarityStyle.bg} border-2 ${rarityStyle.border} p-6 shadow-2xl text-center space-y-5`}>
+            <div className="text-xs uppercase tracking-widest font-extrabold text-amber-400">
+              ✨ LEGENDARY STREAK UNLOCK ✨
+            </div>
 
-        const csvContent = "data:text/csv;charset=utf-8," + csvRows.join("\n");
-        const encodedUri = encodeURI(csvContent);
-        const link = document.createElement("a");
-        link.setAttribute("href", encodedUri);
-        link.setAttribute("download", `Project_Diary_Master_Export.csv`);
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
+            <div className="text-6xl py-4 animate-pulse">
+              {item.icon}
+            </div>
+
+            <div>
+              <span className={`text-xs uppercase font-extrabold ${rarityStyle.text}`}>{item.rarity} {item.type}</span>
+              <h3 className="text-2xl font-bold font-serif text-slate-100 mt-1">{item.name}</h3>
+              <p className="text-xs text-slate-300 mt-2">{item.desc}</p>
+            </div>
+
+            <div className="flex gap-2">
+              <button
+                onClick={onEquip}
+                className="flex-1 py-2.5 rounded-xl bg-amber-400 hover:bg-amber-300 text-slate-950 font-bold text-xs shadow-lg shadow-amber-500/20"
+              >
+                Equip Now
+              </button>
+              <button
+                onClick={onClose}
+                className="py-2.5 px-4 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 font-bold text-xs"
+              >
+                Vault Item
+              </button>
+            </div>
+          </div>
+        </div>
+      );
     }
 
-    function importDataFromCSV(event) {
-        const file = event.target.files[0];
-        if(!file) return;
-
-        const reader = new FileReader();
-        reader.onload = function(e) {
-            const text = e.target.result;
-            const lines = text.split("\n");
-            let importedDatabase = [];
-
-            for(let i = 1; i < lines.length; i++) {
-                if(!lines[i].trim()) continue;
-                let parts = lines[i].split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/).map(x => x.replace(/^"|"$/g, '').trim());
-                if(parts.length < 2) continue;
-
-                const type = parts[0];
-                const pId = parts[1];
-
-                if(type === "METADATA") {
-                    importedDatabase.push({
-                        id: pId, fy: parts[2], name: parts[3], details: parts[4],
-                        metaLinks:[], plans:[], decisions:[], problems:[], layouts:[], budgets:[], tenders:[], executions:[]
-                    });
-                    continue;
-                }
-
-                let p = importedDatabase.find(proj => proj.id === pId);
-                if(!p) {
-                    p = { id: pId, fy: "Unknown", name: "Imported Record", details: "", metaLinks:[], plans:[], decisions:[], problems:[], layouts:[], budgets:[], tenders:[], executions:[] };
-                    importedDatabase.push(p);
-                }
-
-                if(type === "GDRIVE_META") p.metaLinks.push({ name: parts[5], link: parts[6] });
-                else if(type === "PLAN") p.plans.push({ id: 'L-'+Date.now()+i, date: parts[5], text: parts[6] });
-                else if(type === "DECISION") p.decisions.push({ id: 'L-'+Date.now()+i, date: parts[5], decision: parts[6], work: parts[7] });
-                else if(type === "PROBLEM") p.problems.push({ id: 'L-'+Date.now()+i, date: parts[5], problem: parts[6], discussed: parts[7], implemented: parts[8] });
-                else if(type === "LAYOUT") p.layouts.push({ id: 'L-'+Date.now()+i, date: parts[5], draft: parts[6], note: parts[7] });
-                else if(type === "BUDGET") p.budgets.push({ id: 'L-'+Date.now()+i, date: parts[5], type: parts[6], decision: parts[7], recDate: parts[8], amount: parts[9] });
-                else if(type === "TENDER") p.tenders.push({ id: 'L-'+Date.now()+i, date: parts[5], tenderId: parts[6], appInfo: parts[7], appDate: parts[8], bidder: parts[9], value: parts[10] });
-                else if(type === "EXECUTION") p.executions.push({ id: 'L-'+Date.now()+i, date: parts[5], component: parts[6], progress: parts[7], percent: parts[8], remarks: parts[9] });
-            }
-
-            if(importedDatabase.length > 0) {
-                if(confirm(`Successfully parsed ${importedDatabase.length} projects. Replace your active LocalStorage data?`)) {
-                    database = importedDatabase;
-                    syncMemory();
-                    renderMasterDatabase();
-                }
-            } else {
-                alert("Invalid or corrupt CSV file format mappings.");
-            }
-        };
-        reader.readAsText(file);
+    function LevelUpModal({ level, onClose }) {
+      return (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/90 backdrop-blur-lg">
+          <div className="w-full max-w-sm rounded-3xl bg-gradient-to-b from-purple-900 to-slate-900 border-2 border-amber-400 p-6 text-center space-y-4 shadow-2xl">
+            <div className="text-5xl">⚡ HERO LEVEL UP! ⚡</div>
+            <h3 className="text-3xl font-extrabold text-amber-400 font-serif">Level {level}</h3>
+            <p className="text-xs text-slate-300">Your habit consistency has elevated your hero stats! Gold capacity and quest rewards increased.</p>
+            <button
+              onClick={onClose}
+              className="w-full py-2.5 rounded-xl bg-amber-400 text-slate-950 font-bold text-xs shadow-lg"
+            >
+              Claim Glory
+            </button>
+          </div>
+        </div>
+      );
     }
 
-    function clearPageFormFields() {
-        document.querySelectorAll('.app-view input, .app-view textarea').forEach(el => {
-            if(el.id && !el.id.startsWith('w-proj') && !el.classList.contains('gdrive-label-field') && !el.classList.contains('gdrive-url-field')) {
-                el.value = "";
-            }
-        });
+    function CalendarDayDetailModal({ dayData, onClose }) {
+      return (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-md">
+          <div className="relative w-full max-w-md rounded-3xl bg-slate-900 border border-slate-700 p-6 space-y-4 shadow-2xl">
+            <button onClick={onClose} className="absolute top-4 right-4 text-slate-400 hover:text-slate-100">
+              <X className="w-5 h-5" />
+            </button>
+
+            <h3 className="text-lg font-bold font-serif text-amber-400">
+              Quest Log for {dayData.dateStr}
+            </h3>
+
+            <div className="space-y-2 text-xs">
+              <div className="p-3 rounded-xl bg-slate-950 border border-slate-800">
+                Completed: <strong className="text-amber-300">{dayData.completedCount} / {dayData.totalHabits} Habits</strong>
+              </div>
+
+              <div className="space-y-1 pt-2">
+                <h4 className="font-bold text-slate-300">Completed Habits:</h4>
+                {dayData.completedQuests.length > 0 ? (
+                  dayData.completedQuests.map(q => (
+                    <div key={q.id} className="p-2 rounded-lg bg-emerald-950/40 border border-emerald-500/30 text-emerald-300">
+                      ✓ {q.name} (+{q.xpReward} XP)
+                    </div>
+                  ))
+                ) : (
+                  <p className="text-slate-500 italic">No habits logged for this date.</p>
+                )}
+              </div>
+            </div>
+          </div>
+        </div>
+      );
     }
 
-    function syncMemory() {
-        localStorage.setItem('wizard_diary_data_v4_execution', JSON.stringify(database));
+    function ItemDetailModal({ item, isEquipped, isUnlocked, onEquip, onClose }) {
+      return (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-md">
+          <div className="relative w-full max-w-sm rounded-3xl bg-slate-900 border border-amber-500/30 p-6 space-y-4 text-center shadow-2xl">
+            <button onClick={onClose} className="absolute top-4 right-4 text-slate-400 hover:text-slate-100">
+              <X className="w-5 h-5" />
+            </button>
+
+            <div className="text-5xl py-2">{item.icon}</div>
+            <h3 className="text-xl font-bold font-serif text-slate-100">{item.name}</h3>
+            <p className="text-xs text-amber-400 font-semibold uppercase">{item.rarity} {item.type}</p>
+            <p className="text-xs text-slate-300">{item.desc}</p>
+
+            {isUnlocked ? (
+              <button
+                onClick={onEquip}
+                className="w-full py-2.5 rounded-xl bg-amber-400 hover:bg-amber-300 text-slate-950 font-bold text-xs shadow-lg"
+              >
+                {isEquipped ? 'Unequip Item' : 'Equip Item'}
+              </button>
+            ) : (
+              <div className="p-2.5 rounded-xl bg-slate-950 border border-slate-800 text-xs text-slate-400">
+                Requires {item.streakReq}-Day Habit Streak
+              </div>
+            )}
+          </div>
+        </div>
+      );
     }
-</script>
+
+    const root = ReactDOM.createRoot(document.getElementById('root'));
+    root.render(<App />);
+  </script>
 </body>
 </html>
